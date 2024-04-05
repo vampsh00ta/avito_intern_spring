@@ -1,0 +1,20 @@
+app:
+  name: 'avito_intern'
+  version: '1.0.0'
+
+http:
+  port: '8000'
+
+logger:
+  log_level: 'debug'
+  rollbar_env: 'avito_intern'
+jwt:
+  secret_key: "slatt"
+postgres:
+  username: "avito_intern"
+  password: "avito_intern"
+  host: "localhost"
+  port: "5432"
+  name: "vk_intern"
+  pool_max: 10
+
