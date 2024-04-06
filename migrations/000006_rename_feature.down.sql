@@ -1,0 +1,1 @@
+alter table banner_tag rename column  feature_id to feature;
