@@ -1,19 +1,21 @@
 package service
 
 import (
-	"avito_intern/config"
-	"avito_intern/internal/repository"
+	//"avito_intern/config"
+	psqlrepo "avito_intern/internal/repository/psql"
+	redisrepo "avito_intern/internal/repository/redis"
 )
 
 type Service interface {
 }
 type service struct {
-	repo repository.Repository
-	cfg  config.Jwt
+	db    psqlrepo.Repository
+	cache redisrepo.Repository
 }
 
-func New(repo repository.Repository) Service {
+func New(psqlrepo psqlrepo.Repository, redisrepo redisrepo.Repository) Service {
 	return &service{
-		repo: repo,
+		psqlrepo,
+		redisrepo,
 	}
 }
