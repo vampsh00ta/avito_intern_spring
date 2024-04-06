@@ -17,3 +17,7 @@ postgres:
   port: "5432"
   name: "vk_intern"
   pool_max: 10
+redis:
+  address: "localhost:6379"
+  password: ""
+  db: 0

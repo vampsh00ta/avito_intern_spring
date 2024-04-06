@@ -14,7 +14,8 @@ type (
 		HTTP `yaml:"http"`
 		Log  `yaml:"logger"`
 		PG   `yaml:"postgres"`
-		Jwt  `json:"jwt"`
+		//Jwt  `json:"jwt"`
+		Redis `yaml:"redis"`
 	}
 
 	App struct {
@@ -29,9 +30,9 @@ type (
 	Log struct {
 		Level string `env-required:"true" yaml:"log_level"   env:"LOG_LEVEL"`
 	}
-	Jwt struct {
-		Secret string `env-required:"true" yaml:"secret_key"   env:"secret_key"`
-	}
+	//Jwt struct {
+	//	Secret string `env-required:"true" yaml:"secret_key"   env:"secret_key"`
+	//}
 
 	PG struct {
 		PoolMax  int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
@@ -40,6 +41,11 @@ type (
 		Host     string `env-required:"true" yaml:"host" env-default:"localhost"`
 		Port     string `env-required:"true" yaml:"port" env-default:"5432"`
 		Name     string `env-required:"true" yaml:"name" env-default:"postgres"`
+	}
+	Redis struct {
+		Address  string `env-required:"true" yaml:"address" env:"address"`
+		Password string `env-required:"true" yaml:"password" env-default:"password"`
+		Db       int    `env-required:"true" yaml:"db" env-default:"db"`
 	}
 )
 
