@@ -7,6 +7,7 @@ import (
 )
 
 type Service interface {
+	Banner
 }
 type service struct {
 	db    psqlrepo.Repository

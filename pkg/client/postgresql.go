@@ -20,7 +20,7 @@ type Client interface {
 	BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error)
 }
 
-func NewPostgresClient(ctx context.Context, maxAttempts int, config config.PG) (pool *pgxpool.Pool, err error) {
+func New(ctx context.Context, maxAttempts int, config config.PG) (pool *pgxpool.Pool, err error) {
 	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s",
 		config.Username,
 		config.Password,
