@@ -91,6 +91,8 @@ func (db Pg) GetBanners(ctx context.Context, tagID, featureID, limit, offset int
 	////	`
 
 	q, args := buildGetBannersQuery(tagID, featureID, limit, offset)
+	fmt.Println(q)
+
 	var res []models.Banner
 	rows, err := tx.Query(ctx, q, args...)
 	rowReses, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.BannerTags])
