@@ -50,9 +50,15 @@ func (s service) GetBanners(ctx context.Context, tagID, featureID, limit, offset
 	return res, err
 }
 func (s service) CreateBanner(ctx context.Context, banner models.Banner) (int, error) {
-	var res int
-	res, err := s.db.CreateBanner(ctx, banner)
+	txCtx, err := s.db.Begin(ctx)
 	if err != nil {
+		return -1, err
+	}
+	defer s.db.Commit(ctx)
+	res, err := s.db.CreateBanner(txCtx, banner)
+	if err != nil {
+		defer s.db.Rollback(ctx)
+
 		return -1, err
 	}
 
