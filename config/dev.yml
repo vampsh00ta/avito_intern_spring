@@ -15,7 +15,7 @@ postgres:
   password: "avito_intern"
   host: "localhost"
   port: "5432"
-  name: "vk_intern"
+  name: "avito_intern"
   pool_max: 10
 redis:
   address: "localhost:6379"
