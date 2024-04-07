@@ -12,3 +12,10 @@ type GetBanners struct {
 	Limit     int32 `json:"limit" schema:"limit"`
 	Offset    int32 `json:"offset" schema:"offset"`
 }
+
+type CreateBanner struct {
+	Tags     []int32 `json:"tag_ids" validate:"required" `
+	Feature  int32   `json:"feature_id"  validate:"required"`
+	Content  string  `json:"content"  validate:"required"`
+	IsActive bool    `json:"is_active" validate:"required" `
+}
