@@ -6,10 +6,12 @@ import (
 )
 
 type Banner interface {
-	GetBannerForUser(ctx context.Context, useLastRevision bool, userTag, featureID int32) (models.Banner, error)
+	GetBannerForUser(ctx context.Context, userTag, featureID int32, useLastRevision bool) (models.Banner, error)
+	GetBanners(ctx context.Context, tagID, featureID, limit, offset int32) ([]models.Banner, error)
+	CreateBanner(ctx context.Context, banner models.Banner) (int, error)
 }
 
-func (s service) GetBannerForUser(ctx context.Context, useLastRevision bool, userTag, featureID int32) (models.Banner, error) {
+func (s service) GetBannerForUser(ctx context.Context, userTag, featureID int32, useLastRevision bool) (models.Banner, error) {
 	var res models.Banner
 	res, err := s.cache.GetUserBanner(ctx, userTag, featureID)
 	if err != nil {
@@ -24,6 +26,26 @@ func (s service) GetBannerForUser(ctx context.Context, useLastRevision bool, use
 			return models.Banner{}, err
 		}
 
+	}
+	if res.IsActive == false {
+		res.Content = ""
+	}
+	return res, err
+}
+func (s service) GetBanners(ctx context.Context, tagID, featureID, limit, offset int32) ([]models.Banner, error) {
+	var res []models.Banner
+	res, err := s.db.GetBanners(ctx, tagID, featureID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, err
+}
+func (s service) CreateBanner(ctx context.Context, banner models.Banner) (int, error) {
+	var res int
+	res, err := s.db.CreateBanner(ctx, banner)
+	if err != nil {
+		return -1, err
 	}
 
 	return res, err
