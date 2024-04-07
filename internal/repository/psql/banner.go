@@ -77,7 +77,12 @@ func (db Pg) GetBannerForUser(ctx context.Context, userTag int32, featureID int3
 }
 
 // select banner.*,banner_tag.tag_id,banner_tag.feature_id   from banner
-// join  (select * from banner_tag ) banner_tag on banner_tag.banner_id = banner.id
+// join  (select distinct p1.banner_id from banner_tag p1
+// join banner_tag p2  on p2.banner_id = p1.banner_id and p2.feature_id   = p1.feature_id and p2.tag_id   = $%d) banner_filter
+//
+//	on banner_tag.banner_id = banner.id
+//
+// join banner_tag on   banner_filter.banner_id = banner_tag.banner_id
 func (db Pg) GetBanners(ctx context.Context, tagID, featureID, limit, offset int32) ([]models.Banner, error) {
 
 	tx, err := db.getDb(ctx)
@@ -85,13 +90,7 @@ func (db Pg) GetBanners(ctx context.Context, tagID, featureID, limit, offset int
 		return nil, err
 	}
 
-	//q := `select banner.*,banner_tag.tag_id,banner_tag.feature_id   from banner
-	//	join  (select * from where tagID = @tagID and featureID = @featureID ) banner_tag on banner_tag.banner_id = banner.id
-	//	limit @limit offset @offset
-	////	`
-
 	q, args := buildGetBannersQuery(tagID, featureID, limit, offset)
-	fmt.Println(q)
 
 	var res []models.Banner
 	rows, err := tx.Query(ctx, q, args...)
