@@ -61,7 +61,6 @@ func Run(cfg *config.Config) {
 	select {
 	case <-interrupt:
 		panic("exit")
-
 	}
 
 }

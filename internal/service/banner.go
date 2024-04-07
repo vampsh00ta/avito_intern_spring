@@ -9,8 +9,16 @@ type Banner interface {
 	GetBannerForUser(ctx context.Context, userTag, featureID int32, useLastRevision bool) (models.Banner, error)
 	GetBanners(ctx context.Context, tagID, featureID, limit, offset int32) ([]models.Banner, error)
 	CreateBanner(ctx context.Context, banner models.Banner) (int, error)
+	DeleteBannerByID(ctx context.Context, ID int) error
 }
 
+func (s service) DeleteBannerByID(ctx context.Context, ID int) error {
+	if err := s.db.DeleteBannerByID(ctx, ID); err != nil {
+		return err
+	}
+
+	return nil
+}
 func (s service) GetBannerForUser(ctx context.Context, userTag, featureID int32, useLastRevision bool) (models.Banner, error) {
 	var res models.Banner
 	res, err := s.cache.GetUserBanner(ctx, userTag, featureID)

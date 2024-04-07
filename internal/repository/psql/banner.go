@@ -13,6 +13,7 @@ type Banner interface {
 	GetBanners(ctx context.Context, tagID, featureID, limit, offset int32) ([]models.Banner, error)
 
 	AddTagsToBanner(ctx context.Context, bannerID int, featureID int32, tags ...int32) error
+	DeleteBannerByID(ctx context.Context, ID int) error
 }
 
 // insert into banner (content,is_active) values ($1,$2) returning id
@@ -124,4 +125,17 @@ func (db Pg) GetBanners(ctx context.Context, tagID, featureID, limit, offset int
 		res = append(res, *value)
 	}
 	return res, nil
+}
+
+// delete from banner where id = $1
+func (db Pg) DeleteBannerByID(ctx context.Context, ID int) error {
+	tx, err := db.getDb(ctx)
+	if err != nil {
+		return err
+	}
+	q := `delete from banner where id = $1 returning id`
+	if err := tx.QueryRow(ctx, q, ID).Scan(&ID); err != nil {
+		return err
+	}
+	return nil
 }

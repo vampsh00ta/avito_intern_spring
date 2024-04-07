@@ -5,7 +5,9 @@ import (
 	"avito_intern/internal/transport/http/request"
 	"avito_intern/internal/transport/http/response"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 )
 
 func (t transport) GetBannerForUser(w http.ResponseWriter, r *http.Request) {
@@ -47,6 +49,27 @@ func (t transport) GetBanners(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	t.handleOk(w, banners, methodName, http.StatusOK)
+}
+
+func (t transport) DeleteBannerByID(w http.ResponseWriter, r *http.Request) {
+	methodName := "DeleteBannerByID"
+	strID := r.PathValue("id")
+	if strID == "" {
+		t.handleError(w, fmt.Errorf("nil id"), fmt.Errorf("nil id"), methodName, http.StatusBadRequest)
+		return
+	}
+	ID, err := strconv.Atoi(strID)
+	if err != nil {
+		t.handleError(w, fmt.Errorf("wrong id"), fmt.Errorf("wrong id"), methodName, http.StatusBadRequest)
+		return
+	}
+
+	if err := t.s.DeleteBannerByID(r.Context(), ID); err != nil {
+		t.handleError(w, err, err, methodName, http.StatusInternalServerError)
+
+		return
+	}
+	t.handleOk(w, nil, methodName, http.StatusCreated)
 }
 func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 	methodName := "CreateBanner"

@@ -25,6 +25,7 @@ func New(t service.Service, l *zap.SugaredLogger) http.Handler {
 	mux.HandleFunc("GET /user_banner", r.GetBannerForUser)
 	mux.HandleFunc("GET /banner", r.GetBanners)
 	mux.HandleFunc("POST /banner", r.CreateBanner)
+	mux.HandleFunc("DELETE /{id}", r.DeleteBannerByID)
 
 	//mux.HandleFunc("GET /swagger/*", httpSwagger.Handler(
 	//	httpSwagger.URL("http://localhost:8000/swagger/doc.json"), //The url pointing to API definition
