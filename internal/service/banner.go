@@ -11,6 +11,7 @@ type Banner interface {
 	CreateBanner(ctx context.Context, banner models.Banner) (int, error)
 	DeleteBannerByID(ctx context.Context, ID int) error
 	ChangeBanner(ctx context.Context, ID int, banner models.BannerChange) error
+	DeleteBannerByTagAndFeature(ctx context.Context, featureID, tagID int32) (int, error)
 }
 
 func (s service) ChangeBanner(ctx context.Context, ID int, banner models.BannerChange) error {
@@ -79,4 +80,18 @@ func (s service) CreateBanner(ctx context.Context, banner models.Banner) (int, e
 	}
 
 	return res, err
+}
+func (s service) DeleteBannerByTagAndFeature(ctx context.Context, featureID, tagID int32) (int, error) {
+	ctx, err := s.db.Begin(ctx)
+	if err != nil {
+		return -1, err
+	}
+	defer s.db.Commit(ctx)
+	id, err := s.db.DeleteBannerByTagAndFeature(ctx, featureID, tagID)
+	if err != nil {
+
+		s.db.Rollback(ctx)
+		return -1, err
+	}
+	return id, nil
 }

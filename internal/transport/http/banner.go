@@ -159,3 +159,31 @@ func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
 	}
 	t.handleHTTPOk(w, nil, methodName, http.StatusCreated)
 }
+
+func (t transport) DeleteBannerByTagAndFeature(w http.ResponseWriter, r *http.Request) {
+	methodName := "DeleteBannerByTagAndFeature"
+
+	if code, err := t.permission(w, r, models.Admin); err != nil {
+		t.handleHTTPError(w, err, methodName, code)
+		return
+	}
+
+	var req request.DeleteBannerByTagAndFeature
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
+
+		return
+	}
+	if err := validate.Struct(req); err != nil {
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
+		return
+	}
+
+	id, err := t.s.DeleteBannerByTagAndFeature(r.Context(), req.FeatureID, req.TagID)
+	if err != nil {
+		t.handleHTTPError(w, err, methodName, http.StatusInternalServerError)
+		return
+	}
+	t.handleHTTPOk(w, response.DeleteBannerByTagAndFeature{id}, methodName, http.StatusCreated)
+}

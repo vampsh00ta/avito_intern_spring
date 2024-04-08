@@ -11,3 +11,6 @@ type GetBanners struct {
 type CreateBanner struct {
 	Id int `json:"id"  `
 }
+type DeleteBannerByTagAndFeature struct {
+	Id int `json:"id"  `
+}

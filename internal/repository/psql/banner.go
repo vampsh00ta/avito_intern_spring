@@ -14,6 +14,7 @@ type Banner interface {
 	ChangeBanner(ctx context.Context, ID int, banner models.BannerChange) error
 	AddTagsToBanner(ctx context.Context, bannerID int, featureID int32, tags ...int32) error
 	DeleteBannerByID(ctx context.Context, ID int) error
+	DeleteBannerByTagAndFeature(ctx context.Context, featureID, tagID int32) (int, error)
 }
 
 // insert into banner (content,is_active) values ($1,$2) returning id
@@ -138,6 +139,23 @@ func (db Pg) DeleteBannerByID(ctx context.Context, ID int) error {
 	}
 	return nil
 }
+func (db Pg) DeleteBannerByTagAndFeature(ctx context.Context, featureID, tagID int32) (int, error) {
+	client, err := db.getDb(ctx)
+	if err != nil {
+		return -1, err
+	}
+	var bannerID int
+	q := `select banner_id  from banner_tag where feature_id = $1  and tag_id = $2`
+	if err := client.QueryRow(ctx, q, featureID, tagID).Scan(&bannerID); err != nil {
+		return -1, err
+	}
+	q = `delete from banner where id = $1 returning id`
+	if err := client.QueryRow(ctx, q, bannerID).Scan(&bannerID); err != nil {
+		return -1, err
+	}
+	return bannerID, nil
+}
+
 func (db Pg) ChangeBannerTagsOrFeature(ctx context.Context, ID int, featureID *int32, tagIDs ...int32) error {
 	client, err := db.getDb(ctx)
 	if err != nil {

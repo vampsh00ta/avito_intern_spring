@@ -29,3 +29,7 @@ type ChangeBanner struct {
 	Content  *string  `json:"content"  `
 	IsActive *bool    `json:"is_active"  `
 }
+type DeleteBannerByTagAndFeature struct {
+	TagID     int32 `json:"tag_id" validate:"required" `
+	FeatureID int32 `json:"feature_id"  validate:"required"`
+}
