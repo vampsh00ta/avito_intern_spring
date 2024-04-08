@@ -5,6 +5,7 @@ import "avito_intern/pkg/client"
 type Repository interface {
 	Tx
 	Banner
+	User
 }
 
 type Pg struct {

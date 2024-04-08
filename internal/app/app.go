@@ -44,7 +44,7 @@ func Run(cfg *config.Config) {
 		log.Fatal(fmt.Errorf("avito - Run - postgres.New: %w", err))
 	}
 
-	srvc := service.New(psqlrepo, redisrepo)
+	srvc := service.New(psqlrepo, redisrepo, cfg)
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM, syscall.SIGKILL)

@@ -188,11 +188,11 @@ func (db Pg) ChangeBanner(ctx context.Context, ID int, banner models.BannerChang
 	}
 
 	q += " where id = $1 returning id"
-	fmt.Println(q)
 
 	if err := client.QueryRow(ctx, q, args...).Scan(&ID); err != nil {
 		return err
 	}
+
 	argsTags := []int32{}
 
 	if banner.Tags != nil {

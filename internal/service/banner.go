@@ -19,8 +19,7 @@ func (s service) ChangeBanner(ctx context.Context, ID int, banner models.BannerC
 		return err
 	}
 	defer s.db.Commit(ctx)
-	//tx, _ := s.db.GetDb(ctx)
-	//fmt.Println(tx)
+
 	if err := s.db.ChangeBanner(ctx, ID, banner); err != nil {
 		s.db.Rollback(ctx)
 

@@ -10,11 +10,11 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App  `yaml:"app"`
-		HTTP `yaml:"http"`
-		Log  `yaml:"logger"`
-		PG   `yaml:"postgres"`
-		//Jwt  `json:"jwt"`
+		App   `yaml:"app"`
+		HTTP  `yaml:"http"`
+		Log   `yaml:"logger"`
+		PG    `yaml:"postgres"`
+		Jwt   `yaml:"jwt"`
 		Redis `yaml:"redis"`
 	}
 
@@ -30,9 +30,9 @@ type (
 	Log struct {
 		Level string `env-required:"true" yaml:"log_level"   env:"LOG_LEVEL"`
 	}
-	//Jwt struct {
-	//	Secret string `env-required:"true" yaml:"secret_key"   env:"secret_key"`
-	//}
+	Jwt struct {
+		Secret string `env-required:"true" yaml:"secret_key"   env:"secret_key"`
+	}
 
 	PG struct {
 		PoolMax  int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
