@@ -1,6 +1,7 @@
 package http
 
 import (
+	"avito_intern/internal/errs"
 	"avito_intern/internal/models"
 	"avito_intern/internal/transport/http/request"
 	"avito_intern/internal/transport/http/response"
@@ -102,7 +103,7 @@ func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if ok := json.Valid([]byte(req.Content)); !ok {
-		t.handleHTTPError(w, fmt.Errorf(models.IncorrectJSONErr), methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, fmt.Errorf(errs.IncorrectJSONErr), methodName, http.StatusBadRequest)
 		return
 	}
 	banner := models.Banner{
@@ -141,7 +142,7 @@ func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
 
 	if req.Content != nil {
 		if ok := IsJSON(*req.Content); !ok {
-			t.handleHTTPError(w, fmt.Errorf(models.IncorrectJSONErr), methodName, http.StatusBadRequest)
+			t.handleHTTPError(w, fmt.Errorf(errs.IncorrectJSONErr), methodName, http.StatusBadRequest)
 			return
 		}
 	}

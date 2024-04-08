@@ -1,30 +1,20 @@
 package http
 
 import (
-	"avito_intern/internal/models"
+	"avito_intern/internal/errs"
 	"avito_intern/internal/transport/http/response"
 	"encoding/json"
 	"fmt"
-	"github.com/jackc/pgx/v5/pgconn"
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 )
 
-func handleError(err error) error {
-
-	if pgErr, ok := err.(*pgconn.PgError); ok {
-		switch pgErr.Code {
-		case "23505":
-			err = fmt.Errorf(models.DublicateErr)
-		}
-	}
-	return err
-}
 func (t transport) handleHTTPError(w http.ResponseWriter, err error, method string, status int) {
 	w.WriteHeader(status)
 	logError := err
-	err = handleError(err)
+	err = errs.Handle(err)
+
 	json.NewEncoder(w).Encode(response.Error{Error: err.Error()})
 	t.l.Error(method, zap.Error(logError))
 }
@@ -55,9 +45,9 @@ func getIdFromUrl(r *http.Request) (int, error) {
 
 //	func (t transport) permission(w http.ResponseWriter, r *http.Request, groupIDs ...int) error {
 //		jwtToken := r.Header.Get("Authorization")
-//		admin, err := t.s.IsLogged(r.Context(), jwtToken)
-//		if err != nil {
-//			return err
+//		admin, errs := t.s.IsLogged(r.Context(), jwtToken)
+//		if errs != nil {
+//			return errs
 //		}
 //		if !admin {
 //			return fmt.Errorf(models.NotAdminErr)
@@ -67,9 +57,9 @@ func getIdFromUrl(r *http.Request) (int, error) {
 //
 //	func (t transport) adminPermission(w http.ResponseWriter, r *http.Request) error {
 //		jwtToken := r.Header.Get("Authorization")
-//		admin, err := t.s.IsAdmin(r.Context(), jwtToken)
-//		if err != nil {
-//			return err
+//		admin, errs := t.s.IsAdmin(r.Context(), jwtToken)
+//		if errs != nil {
+//			return errs
 //		}
 //		if !admin {
 //			return fmt.Errorf(models.NotAdminErr)
@@ -83,7 +73,7 @@ func (t transport) permission(w http.ResponseWriter, r *http.Request, groupIDs .
 		return http.StatusUnauthorized, err
 	}
 	if !ok {
-		return http.StatusForbidden, fmt.Errorf(models.WrongRoleErr)
+		return http.StatusForbidden, fmt.Errorf(errs.WrongRoleErr)
 
 	}
 

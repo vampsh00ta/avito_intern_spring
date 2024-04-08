@@ -1,7 +1,7 @@
 package service
 
 import (
-	"avito_intern/internal/models"
+	"avito_intern/internal/errs"
 	"context"
 	"fmt"
 )
@@ -39,7 +39,7 @@ func (s service) Login(ctx context.Context, username string) (string, error) {
 		return "", err
 	}
 	if user.Id == 0 {
-		return "", fmt.Errorf(models.NoUserSuchUserErr)
+		return "", fmt.Errorf(errs.NoUserSuchUserErr)
 	}
 	jwtToken, err := s.CreateAccessToken(user, 24*30)
 	if err != nil {

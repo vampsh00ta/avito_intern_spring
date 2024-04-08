@@ -29,7 +29,7 @@ func Run(cfg *config.Config) {
 
 	pg, err := client.New(ctx, 5, cfg.PG)
 	if err != nil {
-		//log.Fatal(fmt.Errorf("vk - Run - postgres.New: %w", err))
+		//log.Fatal(fmt.Errorf("vk - Run - postgres.New: %w", errs))
 	}
 	psqlrepo := psqlrep.New(pg)
 
