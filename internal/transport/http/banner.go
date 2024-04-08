@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 )
 
 func (t transport) GetBannerForUser(w http.ResponseWriter, r *http.Request) {
@@ -33,6 +32,9 @@ func (t transport) GetBannerForUser(w http.ResponseWriter, r *http.Request) {
 		t.handleHTTPError(w, err, methodName, http.StatusInternalServerError)
 
 		return
+	}
+	if !userBanner.IsActive {
+		userBanner.Content = ""
 	}
 	t.handleHTTPOk(w, response.GetBannerForUser{Content: userBanner.Content}, methodName, http.StatusOK)
 }
@@ -67,14 +69,9 @@ func (t transport) DeleteBannerByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	strID := r.PathValue("id")
-	if strID == "" {
-		t.handleHTTPError(w, fmt.Errorf(models.NilIDErr), methodName, http.StatusBadRequest)
-		return
-	}
-	ID, err := strconv.Atoi(strID)
+	ID, err := getIdFromUrl(r)
 	if err != nil {
-		t.handleHTTPError(w, fmt.Errorf(models.WrongIDErr), methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
 		return
 	}
 
