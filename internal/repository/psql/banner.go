@@ -11,20 +11,20 @@ type Banner interface {
 	CreateBanner(ctx context.Context, banner models.Banner) (int, error)
 	GetBannerForUser(ctx context.Context, userTag int32, featureID int32) (models.Banner, error)
 	GetBanners(ctx context.Context, tagID, featureID, limit, offset int32) ([]models.Banner, error)
-
+	ChangeBanner(ctx context.Context, ID int, banner models.BannerChange) error
 	AddTagsToBanner(ctx context.Context, bannerID int, featureID int32, tags ...int32) error
 	DeleteBannerByID(ctx context.Context, ID int) error
 }
 
 // insert into banner (content,is_active) values ($1,$2) returning id
 func (db Pg) CreateBanner(ctx context.Context, banner models.Banner) (int, error) {
-	tx, err := db.getDb(ctx)
+	client, err := db.getDb(ctx)
 	if err != nil {
 		return -1, err
 	}
 	q := `insert into banner (content,is_active) values ($1,$2) returning id`
 	var bannerID int
-	if err := tx.QueryRow(ctx, q, banner.Content, banner.IsActive).
+	if err := client.QueryRow(ctx, q, banner.Content, banner.IsActive).
 		Scan(&bannerID); err != nil {
 		return -1, err
 	}
@@ -36,7 +36,7 @@ func (db Pg) CreateBanner(ctx context.Context, banner models.Banner) (int, error
 
 // insert into banner_tag (banner_id,feature_id,tag_id) values (args...) returning banner_id
 func (db Pg) AddTagsToBanner(ctx context.Context, bannerID int, featureID int32, tags ...int32) error {
-	tx, err := db.getDb(ctx)
+	client, err := db.getDb(ctx)
 	if err != nil {
 		return err
 	}
@@ -46,8 +46,8 @@ func (db Pg) AddTagsToBanner(ctx context.Context, bannerID int, featureID int32,
 		q += fmt.Sprintf(" ($1,$2,$%d),", i+3)
 		input = append(input, tag)
 	}
-	q = q[:len(q)-1] + "returning banner_id"
-	if err := tx.QueryRow(ctx, q, input...).Scan(&bannerID); err != nil {
+	q = q[:len(q)-1] + " returning banner_id"
+	if err := client.QueryRow(ctx, q, input...).Scan(&bannerID); err != nil {
 		return err
 	}
 	return nil
@@ -58,14 +58,14 @@ func (db Pg) AddTagsToBanner(ctx context.Context, bannerID int, featureID int32,
 // join banner on banner_tag.banner_id = banner.id limit/offset args...
 func (db Pg) GetBannerForUser(ctx context.Context, userTag int32, featureID int32) (models.Banner, error) {
 
-	tx, err := db.getDb(ctx)
+	client, err := db.getDb(ctx)
 	if err != nil {
 		return models.Banner{}, err
 	}
 	q := `select banner.*  from 
         (select * from banner_tag where tag_id = $1 and  feature_id = $2) banner_tag
 		join banner on banner_tag.banner_id = banner.id `
-	row, err := tx.Query(ctx, q, userTag, featureID)
+	row, err := client.Query(ctx, q, userTag, featureID)
 	if err != nil {
 		return models.Banner{}, err
 	}
@@ -86,15 +86,14 @@ func (db Pg) GetBannerForUser(ctx context.Context, userTag int32, featureID int3
 // join banner_tag on   banner_filter.banner_id = banner_tag.banner_id
 func (db Pg) GetBanners(ctx context.Context, tagID, featureID, limit, offset int32) ([]models.Banner, error) {
 
-	tx, err := db.getDb(ctx)
+	client, err := db.getDb(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	q, args := buildGetBannersQuery(tagID, featureID, limit, offset)
-	fmt.Println(q)
 	var res []models.Banner
-	rows, err := tx.Query(ctx, q, args...)
+	rows, err := client.Query(ctx, q, args...)
 	rowReses, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.BannerTags])
 	if err != nil {
 		return nil, err
@@ -129,13 +128,81 @@ func (db Pg) GetBanners(ctx context.Context, tagID, featureID, limit, offset int
 
 // delete from banner where id = $1
 func (db Pg) DeleteBannerByID(ctx context.Context, ID int) error {
-	tx, err := db.getDb(ctx)
+	client, err := db.getDb(ctx)
 	if err != nil {
 		return err
 	}
 	q := `delete from banner where id = $1 returning id`
-	if err := tx.QueryRow(ctx, q, ID).Scan(&ID); err != nil {
+	if err := client.QueryRow(ctx, q, ID).Scan(&ID); err != nil {
 		return err
 	}
+	return nil
+}
+func (db Pg) ChangeBannerTagsOrFeature(ctx context.Context, ID int, featureID *int32, tagIDs ...int32) error {
+	client, err := db.getDb(ctx)
+	if err != nil {
+		return err
+	}
+	if len(tagIDs) > 0 {
+		var res int32
+		q := `delete from banner_tag where banner_id = $1 returning feature_id`
+		if err := client.QueryRow(ctx, q, ID).Scan(&res); err != nil {
+			return err
+		}
+		if featureID == nil {
+			featureID = &res
+		}
+
+		if err := db.AddTagsToBanner(ctx, ID, *featureID, tagIDs...); err != nil {
+			return err
+		}
+
+	} else if featureID != nil {
+		q := `update  banner_tag set feature_id = $2 where banner_id = $1 returning banner_id`
+		if err := client.QueryRow(ctx, q, ID, *featureID).Scan(&ID); err != nil {
+			return err
+		}
+	}
+
+	return nil
+
+}
+func (db Pg) ChangeBanner(ctx context.Context, ID int, banner models.BannerChange) error {
+	client, err := db.getDb(ctx)
+	if err != nil {
+		return err
+	}
+	q := `update banner set updated_at = now()`
+	argCount := 2
+	args := []any{ID}
+	fmt.Println(banner)
+	if banner.Content != nil {
+		q += fmt.Sprintf(" , content = $%d", argCount)
+		args = append(args, banner.Content)
+		argCount += 1
+	}
+	if banner.IsActive != nil {
+		q += fmt.Sprintf(" , is_active = $%d", argCount)
+		args = append(args, banner.IsActive)
+		argCount += 1
+	}
+
+	q += " where id = $1 returning id"
+	fmt.Println(q)
+
+	if err := client.QueryRow(ctx, q, args...).Scan(&ID); err != nil {
+		return err
+	}
+	argsTags := []int32{}
+
+	if banner.Tags != nil {
+		for _, tag := range *banner.Tags {
+			argsTags = append(argsTags, tag)
+		}
+	}
+	if err := db.ChangeBannerTagsOrFeature(ctx, ID, banner.Feature, argsTags...); err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -22,3 +22,10 @@ type CreateBanner struct {
 	Content  string  `json:"content"  validate:"required"`
 	IsActive bool    `json:"is_active" validate:"required" `
 }
+
+type ChangeBanner struct {
+	Tags     *[]int32 `json:"tag_ids"  `
+	Feature  *int32   `json:"feature_id"  `
+	Content  *string  `json:"content"  `
+	IsActive *bool    `json:"is_active"  `
+}

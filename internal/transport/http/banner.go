@@ -99,3 +99,31 @@ func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 	}
 	t.handleOk(w, response.CreateBanner{id}, methodName, http.StatusCreated)
 }
+func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
+	methodName := "ChangeBanner"
+	ID, err := getIdFromUrl(r)
+	if err != nil {
+		t.handleError(w, err, err, methodName, http.StatusBadRequest)
+		return
+	}
+	var req request.ChangeBanner
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		t.handleError(w, err, err, methodName, http.StatusBadRequest)
+
+		return
+	}
+
+	banner := models.BannerChange{
+		Tags:     req.Tags,
+		Feature:  req.Feature,
+		Content:  req.Content,
+		IsActive: req.IsActive,
+	}
+	fmt.Println(r.Context())
+	if err := t.s.ChangeBanner(r.Context(), ID, banner); err != nil {
+		t.handleError(w, err, err, methodName, http.StatusInternalServerError)
+
+		return
+	}
+	t.handleOk(w, nil, methodName, http.StatusCreated)
+}
