@@ -8,6 +8,7 @@ import (
 type Banner interface {
 	GetBannerForUser(ctx context.Context, userTag, featureID int32, useLastRevision bool) (models.Banner, error)
 	GetBanners(ctx context.Context, tagID, featureID, limit, offset int32) ([]models.Banner, error)
+
 	CreateBanner(ctx context.Context, banner models.Banner) (int, error)
 	DeleteBannerByID(ctx context.Context, ID int) error
 	ChangeBanner(ctx context.Context, ID int, banner models.BannerChange) error
@@ -20,10 +21,19 @@ func (s service) ChangeBanner(ctx context.Context, ID int, banner models.BannerC
 		return err
 	}
 	defer s.db.Commit(ctx)
+	currBanner, err := s.db.GetBannerByID(ctx, ID)
+	if err != nil {
+		s.db.Rollback(ctx)
 
+		return err
+	}
 	if err := s.db.ChangeBanner(ctx, ID, banner); err != nil {
 		s.db.Rollback(ctx)
 
+		return err
+	}
+	if err := s.db.CreateHistoryBanner(ctx, currBanner); err != nil {
+		s.db.Rollback(ctx)
 		return err
 	}
 
@@ -66,6 +76,19 @@ func (s service) GetBanners(ctx context.Context, tagID, featureID, limit, offset
 
 	return res, err
 }
+func (s service) GetBannerWithHistory(ctx context.Context, bannerID, limit int) ([]models.Banner, error) {
+	var res []models.Banner
+	if limit <= 0 || limit > 3 {
+		limit = 3
+	}
+	res, err := s.db.GetBannerWithHistory(ctx, bannerID, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, err
+}
+
 func (s service) CreateBanner(ctx context.Context, banner models.Banner) (int, error) {
 	ctx, err := s.db.Begin(ctx)
 	if err != nil {

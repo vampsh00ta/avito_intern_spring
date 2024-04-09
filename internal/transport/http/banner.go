@@ -59,7 +59,7 @@ func (t transport) GetBanners(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	t.handleHTTPOk(w, banners, methodName, http.StatusOK)
+	t.handleHTTPOk(w, response.GetBanners(banners), methodName, http.StatusOK)
 }
 
 func (t transport) DeleteBannerByID(w http.ResponseWriter, r *http.Request) {
@@ -187,4 +187,32 @@ func (t transport) DeleteBannerByTagAndFeature(w http.ResponseWriter, r *http.Re
 		return
 	}
 	t.handleHTTPOk(w, response.DeleteBannerByTagAndFeature{id}, methodName, http.StatusCreated)
+}
+
+func (t transport) GetBannerWithHistory(w http.ResponseWriter, r *http.Request) {
+	methodName := "GetBannerWithHistory"
+
+	if code, err := t.permission(w, r, models.Admin); err != nil {
+		t.handleHTTPError(w, err, methodName, code)
+		return
+	}
+
+	ID, err := getIdFromUrl(r)
+	if err != nil {
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
+		return
+	}
+	var req request.GetBannerHistory
+
+	if err := decoder.Decode(&req, r.URL.Query()); err != nil {
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
+		return
+	}
+	banners, err := t.s.GetBannerWithHistory(r.Context(), ID, req.Limit)
+	if err != nil {
+		t.handleHTTPError(w, err, methodName, http.StatusInternalServerError)
+
+		return
+	}
+	t.handleHTTPOk(w, banners, methodName, http.StatusOK)
 }

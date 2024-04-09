@@ -12,6 +12,9 @@ type GetBanners struct {
 	Limit     int32 `json:"limit" schema:"limit"`
 	Offset    int32 `json:"offset" schema:"offset"`
 }
+type GetBannerHistory struct {
+	Limit int `json:"limit" schema:"limit"`
+}
 type DeleteBannerByID struct {
 	Id int `json:"id"  `
 }

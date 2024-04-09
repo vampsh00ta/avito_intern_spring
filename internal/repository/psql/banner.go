@@ -10,6 +10,7 @@ import (
 type Banner interface {
 	CreateBanner(ctx context.Context, banner models.Banner) (int, error)
 	GetBannerForUser(ctx context.Context, userTag int32, featureID int32) (models.Banner, error)
+	GetBannerByID(ctx context.Context, ID int) (models.Banner, error)
 	GetBanners(ctx context.Context, tagID, featureID, limit, offset int32) ([]models.Banner, error)
 	ChangeBanner(ctx context.Context, ID int, banner models.BannerChange) error
 	AddTagsToBanner(ctx context.Context, bannerID int, featureID int32, tags ...int32) error
@@ -75,6 +76,37 @@ func (db Pg) GetBannerForUser(ctx context.Context, userTag int32, featureID int3
 		return models.Banner{}, err
 	}
 
+	return res, nil
+}
+func (db Pg) GetBannerByID(ctx context.Context, ID int) (models.Banner, error) {
+
+	client, err := db.getDb(ctx)
+	if err != nil {
+		return models.Banner{}, err
+	}
+	q := `select banner.* , banner_tag.feature_id,tag_id from  
+		   (select *  from  banner where id = $1) banner
+		   join banner_tag on banner.id = banner_tag.banner_id`
+	row, err := client.Query(ctx, q, ID)
+	if err != nil {
+		return models.Banner{}, err
+	}
+	bannerTags, err := pgx.CollectRows(row, pgx.RowToStructByName[models.BannerTags])
+	if err != nil {
+		return models.Banner{}, err
+	}
+
+	var res models.Banner
+	for _, bannerTag := range bannerTags {
+		res.Id = bannerTag.Id
+		res.IsActive = bannerTag.IsActive
+		res.Content = bannerTag.Content
+		res.Feature = bannerTag.Feature
+
+		res.UpdatedAt = bannerTag.UpdatedAt
+		res.CreatedAt = bannerTag.CreatedAt
+		res.Tags = append(res.Tags, bannerTag.Tag)
+	}
 	return res, nil
 }
 

@@ -19,12 +19,11 @@ func (t transport) handleHTTPError(w http.ResponseWriter, err error, method stri
 	t.l.Error(method, zap.Error(logError))
 }
 func (t transport) handleHTTPOk(w http.ResponseWriter, resp interface{}, method string, status int) {
-
+	fmt.Println(resp)
 	w.WriteHeader(status)
 	if resp != nil {
 		json.NewEncoder(w).Encode(resp)
 	}
-
 	t.l.Info(method)
 }
 func IsJSON(str string) bool {

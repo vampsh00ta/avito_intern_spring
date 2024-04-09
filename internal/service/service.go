@@ -9,6 +9,7 @@ import (
 
 type Service interface {
 	Banner
+	BannerHistory
 	Auth
 }
 type service struct {
