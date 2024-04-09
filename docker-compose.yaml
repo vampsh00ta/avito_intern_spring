@@ -1,0 +1,76 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+    image: app
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    links:
+      - migrate
+    networks:
+      -  db-network
+      -  redis
+  db:
+    image: postgres:14.6
+    restart: always
+    container_name: db
+    hostname: db
+    environment:
+      POSTGRES_DB: docker_avito
+      POSTGRES_PASSWORD: docker_avito
+      POSTGRES_USER: docker_avito
+    ports:
+      - "5432:5432"
+    volumes:
+      - psql:/var/lib/postgresql/data
+
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U docker_avito" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - db-network
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+    healthcheck:
+      test: [ "CMD", "redis-cli","ping" ]
+    networks:
+      - redis
+  migrate:
+    image: migrate/migrate
+    container_name: db_migrations
+    networks:
+      - db-network
+    volumes:
+      - ./migrations:/migrations
+    links:
+      - db
+    command: -path=/migrations -database postgres://docker_avito:docker_avito@db:5432/docker_avito?sslmode=disable up
+
+
+networks:
+  db-network:
+  redis:
+volumes:
+  psql:
