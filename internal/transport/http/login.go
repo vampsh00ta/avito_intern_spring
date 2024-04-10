@@ -25,12 +25,10 @@ func (t transport) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jwtToken, err := t.s.Login(r.Context(), user.Username)
-
 	if err != nil {
 		t.handleHTTPError(w, err, methodName, http.StatusInternalServerError)
 
 		return
 	}
 	t.handleHTTPOk(w, response.Login{Access: jwtToken}, methodName, http.StatusOK)
-
 }

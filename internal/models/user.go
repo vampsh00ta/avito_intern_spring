@@ -6,7 +6,7 @@ const (
 )
 
 type User struct {
-	Id       int    `json:"id" db:"id"`
+	ID       int    `json:"id" db:"id"`
 	Username string `json:"username" db:"username"`
 	Admin    bool   `json:"admin" db:"admin"`
 }

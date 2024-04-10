@@ -9,7 +9,7 @@ create table banner_history(
 );
 
 create table banner_tag_history(
-                           banner_history_id  integer references banner_history(id) ,
+                           banner_history_id  integer references banner_history(id) on delete cascade ,
                            tag_id  bigint references tag(id) ,
                            feature_id bigint references feature(id),
                      primary key(banner_history_id,tag_id,feature_id)

@@ -39,6 +39,7 @@ func (s service) ChangeBanner(ctx context.Context, ID int, banner models.BannerC
 
 	return nil
 }
+
 func (s service) DeleteBannerByID(ctx context.Context, ID int) error {
 	if err := s.db.DeleteBannerByID(ctx, ID); err != nil {
 		return err
@@ -46,13 +47,14 @@ func (s service) DeleteBannerByID(ctx context.Context, ID int) error {
 
 	return nil
 }
+
 func (s service) GetBannerForUser(ctx context.Context, userTag, featureID int32, useLastRevision bool) (models.Banner, error) {
 	var res models.Banner
 	res, err := s.cache.GetUserBanner(ctx, userTag, featureID)
 	if err != nil {
 		return models.Banner{}, err
 	}
-	if useLastRevision || res.Id == 0 {
+	if useLastRevision || res.ID == 0 {
 		res, err = s.db.GetBannerForUser(ctx, userTag, featureID)
 		if err != nil {
 			return models.Banner{}, err
@@ -62,26 +64,15 @@ func (s service) GetBannerForUser(ctx context.Context, userTag, featureID int32,
 		}
 
 	}
-	if res.IsActive == false {
+	if !res.IsActive {
 		res.Content = ""
 	}
 	return res, err
 }
+
 func (s service) GetBanners(ctx context.Context, tagID, featureID, limit, offset int32) ([]models.Banner, error) {
 	var res []models.Banner
 	res, err := s.db.GetBanners(ctx, tagID, featureID, limit, offset)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, err
-}
-func (s service) GetBannerWithHistory(ctx context.Context, bannerID, limit int) ([]models.Banner, error) {
-	var res []models.Banner
-	if limit <= 0 || limit > 3 {
-		limit = 3
-	}
-	res, err := s.db.GetBannerWithHistory(ctx, bannerID, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -104,6 +95,7 @@ func (s service) CreateBanner(ctx context.Context, banner models.Banner) (int, e
 
 	return res, err
 }
+
 func (s service) DeleteBannerByTagAndFeature(ctx context.Context, featureID, tagID int32) (int, error) {
 	ctx, err := s.db.Begin(ctx)
 	if err != nil {

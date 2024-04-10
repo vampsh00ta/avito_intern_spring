@@ -13,7 +13,7 @@ func buildGetBannersQuery(tagID, featureID, limit, offset int32) (string, []any)
 			select distinct p1.banner_id from banner_tag p1 
 			join banner_tag p2
 			on p2.banner_id = p1.banner_id and p2.feature_id   = p1.feature_id and p2.tag_id   = $%d )`, argCount)
-		argCount += 1
+		argCount++
 		args = append(args, tagID)
 
 	}
@@ -24,18 +24,18 @@ func buildGetBannersQuery(tagID, featureID, limit, offset int32) (string, []any)
 			q = q[:len(q)-1]
 			q += fmt.Sprintf(" where p1.feature_id = $%d) ", argCount)
 		}
-		argCount += 1
+		argCount++
 		args = append(args, featureID)
 
 	}
 	if featureID == 0 && tagID == 0 {
-		q += fmt.Sprintf(" (select distinct banner_id from banner_tag)")
+		q += ` (select distinct banner_id from banner_tag)`
 	}
 	if limit > 0 {
 		q = q[:len(q)-1]
 
 		q += fmt.Sprintf(" limit  $%d)", argCount)
-		argCount += 1
+		argCount++
 		args = append(args, limit)
 
 	}
@@ -43,7 +43,7 @@ func buildGetBannersQuery(tagID, featureID, limit, offset int32) (string, []any)
 		q = q[:len(q)-1]
 
 		q += fmt.Sprintf(" offset  $%d)", argCount)
-		argCount += 1
+		argCount++
 		args = append(args, offset)
 
 	}
@@ -53,5 +53,4 @@ func buildGetBannersQuery(tagID, featureID, limit, offset int32) (string, []any)
 `
 
 	return q, args
-
 }

@@ -1,7 +1,9 @@
 package errs
 
 import (
+	"errors"
 	"fmt"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -22,16 +24,14 @@ const (
 )
 
 func Handle(err error) error {
-
 	if pgErr, ok := err.(*pgconn.PgError); ok {
 		switch pgErr.Code {
 		case "23505":
 			return fmt.Errorf(DublicateErr)
 		}
 	}
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return fmt.Errorf(NoRowsInResultErr)
-
 	}
 	return err
 }

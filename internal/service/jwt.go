@@ -4,9 +4,10 @@ import (
 	"avito_intern/internal/errs"
 	"avito_intern/internal/models"
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
 	"strings"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type JwtCustomClaim struct {
@@ -30,6 +31,7 @@ func (s service) CreateAccessToken(customer models.User, expiry int) (accessToke
 	}
 	return t, err
 }
+
 func (s service) IsAuthorized(requestToken string) (bool, error) {
 	splited := strings.Split(requestToken, " ")
 	if len(splited) != 2 || splited[0] != "Bearer" {
@@ -38,7 +40,7 @@ func (s service) IsAuthorized(requestToken string) (bool, error) {
 	requestToken = splited[1]
 	_, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(s.cfg.Secret), nil
 	})
@@ -59,11 +61,10 @@ func (s service) extractUserFromToken(requestToken string) (*JwtCustomClaim, err
 	requestToken = splited[1]
 	token, err := jwt.ParseWithClaims(requestToken, &JwtCustomClaim{}, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", t.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 		return []byte(s.cfg.Secret), nil
 	})
-
 	if err != nil {
 		return nil, err
 	}

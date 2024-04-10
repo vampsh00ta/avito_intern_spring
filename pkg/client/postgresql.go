@@ -5,11 +5,12 @@ import (
 	"avito_intern/pkg/utils"
 	"context"
 	"fmt"
+	"log"
+	"time"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"log"
-	"time"
 )
 
 type Client interface {
@@ -17,7 +18,7 @@ type Client interface {
 	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
 	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
 	Begin(ctx context.Context) (pgx.Tx, error)
-	//BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error)
+	// BeginTx(ctx context.Context, txOptions pgx.TxOptions) (pgx.Tx, error)
 }
 
 func New(ctx context.Context, maxAttempts int, config config.PG) (pool *pgxpool.Pool, err error) {
@@ -40,7 +41,6 @@ func New(ctx context.Context, maxAttempts int, config config.PG) (pool *pgxpool.
 	print(dsn)
 	if err != nil {
 		log.Fatal("error with tries to connect")
-
 	}
 	return pool, nil
 }

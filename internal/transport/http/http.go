@@ -1,18 +1,21 @@
 package http
 
 import (
-	//_ "avito_intern/docs"
+	//_ "avito_intern/docs".
 	"avito_intern/internal/service"
+	"net/http"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
-	"net/http"
-	//swaggerFiles "github.com/swaggo/files"
+	// swaggerFiles "github.com/swaggo/files".
 )
 
-var validate = validator.New(validator.WithRequiredStructEnabled())
-var decoder = schema.NewDecoder()
+var (
+	validate = validator.New(validator.WithRequiredStructEnabled())
+	decoder  = schema.NewDecoder()
+)
 
 type transport struct {
 	s service.Service
@@ -45,5 +48,4 @@ func New(t service.Service, l *zap.SugaredLogger) http.Handler {
 	})
 	handler := c.Handler(mux)
 	return handler
-
 }

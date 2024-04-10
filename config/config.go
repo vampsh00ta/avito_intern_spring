@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
-	"os"
 )
 
 type (
@@ -45,7 +46,7 @@ type (
 	Redis struct {
 		Address  string `env-required:"true" yaml:"address" env:"address"`
 		Password string `env-required:"true" yaml:"password" env-default:"password"`
-		Db       int    `env-required:"true" yaml:"db" env-default:"db"`
+		DB       int    `env-required:"true" yaml:"db" env-default:"db"`
 	}
 )
 
@@ -74,5 +75,4 @@ func New() (*Config, error) {
 	}
 
 	return cfg, nil
-
 }

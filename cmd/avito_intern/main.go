@@ -27,5 +27,4 @@ func main() {
 	}
 
 	app.Run(cfg)
-
 }
