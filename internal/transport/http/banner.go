@@ -39,6 +39,7 @@ func (t transport) GetBannerForUser(w http.ResponseWriter, r *http.Request) {
 	}
 	t.handleHTTPOk(w, response.GetBannerForUser{Content: userBanner.Content}, methodName, http.StatusOK)
 }
+
 func (t transport) GetBanners(w http.ResponseWriter, r *http.Request) {
 	methodName := "GetBanners"
 
@@ -70,7 +71,7 @@ func (t transport) DeleteBannerByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ID, err := getIdFromUrl(r)
+	ID, err := getIDFromURL(r)
 	if err != nil {
 		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
 		return
@@ -83,6 +84,7 @@ func (t transport) DeleteBannerByID(w http.ResponseWriter, r *http.Request) {
 	}
 	t.handleHTTPOk(w, nil, methodName, http.StatusCreated)
 }
+
 func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 	methodName := "CreateBanner"
 
@@ -118,8 +120,9 @@ func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	t.handleHTTPOk(w, response.CreateBanner{id}, methodName, http.StatusCreated)
+	t.handleHTTPOk(w, response.CreateBanner{ID: id}, methodName, http.StatusCreated)
 }
+
 func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
 	methodName := "ChangeBanner"
 
@@ -128,7 +131,7 @@ func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ID, err := getIdFromUrl(r)
+	ID, err := getIDFromURL(r)
 	if err != nil {
 		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
 		return
@@ -186,7 +189,7 @@ func (t transport) DeleteBannerByTagAndFeature(w http.ResponseWriter, r *http.Re
 		t.handleHTTPError(w, err, methodName, http.StatusInternalServerError)
 		return
 	}
-	t.handleHTTPOk(w, response.DeleteBannerByTagAndFeature{id}, methodName, http.StatusCreated)
+	t.handleHTTPOk(w, response.DeleteBannerByTagAndFeature{ID: id}, methodName, http.StatusCreated)
 }
 
 func (t transport) GetBannerWithHistory(w http.ResponseWriter, r *http.Request) {
@@ -197,7 +200,7 @@ func (t transport) GetBannerWithHistory(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	ID, err := getIdFromUrl(r)
+	ID, err := getIDFromURL(r)
 	if err != nil {
 		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
 		return

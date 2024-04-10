@@ -16,7 +16,7 @@ type GetBannerHistory struct {
 	Limit int `json:"limit" schema:"limit"`
 }
 type DeleteBannerByID struct {
-	Id int `json:"id"  `
+	ID int `json:"id"  `
 }
 
 type CreateBanner struct {
