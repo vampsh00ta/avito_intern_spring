@@ -1,0 +1,15 @@
+basePath: /
+host: localhost:8000
+info:
+  contact: {}
+  description: Тестовое задание
+  title: avito_intern Intern
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  ApiKeyAuth:
+    description: Токен вида "Bearer access_token"
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

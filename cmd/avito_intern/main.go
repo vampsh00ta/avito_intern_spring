@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-// @title          avito_intern Intern
+// @title          Avito Intern
 // @version         1.0
 // @description     Тестовое задание
 

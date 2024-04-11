@@ -1,0 +1,405 @@
+basePath: /
+definitions:
+  models.Banner:
+    properties:
+      banner_id:
+        type: integer
+      content:
+        type: string
+      created_at:
+        type: string
+      feature_id:
+        type: integer
+      is_active:
+        type: boolean
+      tag_ids:
+        items:
+          type: integer
+        type: array
+      updated_at:
+        type: string
+    type: object
+  request.CreateBanner:
+    properties:
+      content:
+        type: string
+      feature_id:
+        type: integer
+      is_active:
+        type: boolean
+      tag_ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - content
+    - feature_id
+    - is_active
+    - tag_ids
+    type: object
+  request.DeleteBannerByTagAndFeature:
+    properties:
+      feature_id:
+        type: integer
+      tag_id:
+        type: integer
+    required:
+    - feature_id
+    - tag_id
+    type: object
+  response.CreateBanner:
+    properties:
+      id:
+        type: integer
+    type: object
+  response.DeleteBannerByTagAndFeature:
+    properties:
+      id:
+        type: integer
+    type: object
+  response.Error:
+    properties:
+      error:
+        type: string
+    type: object
+  response.GetBannerForUser:
+    properties:
+      content:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: Тестовое задание
+  title: Avito Intern
+  version: "1.0"
+paths:
+  /banner:
+    delete:
+      consumes:
+      - application/json
+      description: Удаление банера по  тэгу и фиче
+      parameters:
+      - description: Модель запроса
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteBannerByTagAndFeature'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Deleted
+          schema:
+            $ref: '#/definitions/response.DeleteBannerByTagAndFeature'
+        "400":
+          description: Некорректные данные
+          schema:
+            $ref: '#/definitions/response.Error'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/response.Error'
+        "403":
+          description: Пользователь не имеет доступа
+          schema:
+            $ref: '#/definitions/response.Error'
+        "404":
+          description: Баннер не найден
+          schema:
+            $ref: '#/definitions/response.Error'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteBannerByTagAndFeature
+      tags:
+      - Banner
+    get:
+      consumes:
+      - application/json
+      description: Получение всех баннеров c фильтрацией по фиче и/или тегу
+      parameters:
+      - description: Идентификатор фичи
+        in: query
+        name: feature_id
+        type: string
+      - description: Идентификатор тега
+        in: query
+        name: tag_id
+        type: string
+      - description: Лимит
+        in: query
+        name: limit
+        type: string
+      - description: Оффсет
+        in: query
+        name: offset
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Banner'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: GetBanners
+      tags:
+      - Banner
+    post:
+      consumes:
+      - application/json
+      description: Создание нового баннера
+      parameters:
+      - description: Модель запроса
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateBanner'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.CreateBanner'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: CreateBanner
+      tags:
+      - Banner
+  /banner/{id}:
+    delete:
+      description: Удаление баннера по идентификатору
+      parameters:
+      - description: Идентификатор баннера
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Баннер успешно удален
+        "400":
+          description: Некорректные данные
+          schema:
+            $ref: '#/definitions/response.Error'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            $ref: '#/definitions/response.Error'
+        "403":
+          description: Пользователь не имеет доступа
+          schema:
+            $ref: '#/definitions/response.Error'
+        "404":
+          description: Баннер не найден
+          schema:
+            $ref: '#/definitions/response.Error'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteBannerByID
+      tags:
+      - Banner
+    patch:
+      consumes:
+      - application/json
+      description: Обновление содержимого баннера
+      parameters:
+      - description: Идентификатор баннера
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Модель запроса
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateBanner'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.CreateBanner'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: ChangeBanner
+      tags:
+      - Banner
+  /banner_history:
+    get:
+      consumes:
+      - application/json
+      description: История изменений банера
+      parameters:
+      - description: Идентификатор баннера
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: История
+          schema:
+            items:
+              $ref: '#/definitions/models.Banner'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: GetBannerWithHistory
+      tags:
+      - Banner
+  /user_banner:
+    get:
+      consumes:
+      - application/json
+      description: Получение баннера для пользователя
+      parameters:
+      - description: Тэг пользователя
+        in: query
+        name: tag_id
+        required: true
+        type: string
+      - description: Идентификатор фичи
+        in: query
+        name: feature_id
+        required: true
+        type: string
+      - description: 'Получать актуальную информацию '
+        in: query
+        name: use_last_revision
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetBannerForUser'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: GetBannerForUser
+      tags:
+      - Banner
+securityDefinitions:
+  ApiKeyAuth:
+    description: Токен вида "Bearer access_token"
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

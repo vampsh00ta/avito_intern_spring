@@ -3,7 +3,6 @@ package service
 import (
 	"avito_intern/internal/errs"
 	"context"
-	"fmt"
 )
 
 type Auth interface {
@@ -40,7 +39,7 @@ func (s service) Login(ctx context.Context, username string) (string, error) {
 		return "", err
 	}
 	if user.ID == 0 {
-		return "", fmt.Errorf(errs.NoUserSuchUserErr)
+		return "", errs.NoUserSuchUserErr
 	}
 	jwtToken, err := s.CreateAccessToken(user, 24*30)
 	if err != nil {

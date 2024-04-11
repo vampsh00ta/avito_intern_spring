@@ -35,7 +35,7 @@ func (s service) CreateAccessToken(customer models.User, expiry int) (accessToke
 func (s service) IsAuthorized(requestToken string) (bool, error) {
 	splited := strings.Split(requestToken, " ")
 	if len(splited) != 2 || splited[0] != "Bearer" {
-		return false, fmt.Errorf(errs.IncorrectTokenErr)
+		return false, errs.IncorrectTokenErr
 	}
 	requestToken = splited[1]
 	_, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
@@ -52,11 +52,11 @@ func (s service) IsAuthorized(requestToken string) (bool, error) {
 
 func (s service) extractUserFromToken(requestToken string) (*JwtCustomClaim, error) {
 	if requestToken == "" {
-		return nil, fmt.Errorf(errs.NotLoggedErr)
+		return nil, errs.NotLoggedErr
 	}
 	splited := strings.Split(requestToken, " ")
 	if len(splited) != 2 || splited[0] != "Bearer" {
-		return nil, fmt.Errorf(errs.InvalidTokenErr)
+		return nil, errs.InvalidTokenErr
 	}
 	requestToken = splited[1]
 	token, err := jwt.ParseWithClaims(requestToken, &JwtCustomClaim{}, func(t *jwt.Token) (interface{}, error) {
@@ -72,7 +72,7 @@ func (s service) extractUserFromToken(requestToken string) (*JwtCustomClaim, err
 
 	claims, ok := token.Claims.(*JwtCustomClaim)
 	if !ok && !token.Valid {
-		return nil, fmt.Errorf(errs.InvalidTokenErr)
+		return nil, errs.InvalidTokenErr
 	}
 	return claims, nil
 }

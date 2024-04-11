@@ -4,6 +4,8 @@ import (
 	"avito_intern/internal/models"
 	"context"
 	"encoding/json"
+	"errors"
+	"github.com/redis/go-redis/v9"
 	"strconv"
 )
 
@@ -15,11 +17,14 @@ type Banner interface {
 func (r Redis) GetUserBanner(ctx context.Context, tagID, featureID int32) (models.Banner, error) {
 	key := strconv.Itoa(int(tagID)) + "_" + strconv.Itoa(int(featureID))
 	res := r.client.Get(ctx, key)
-	if res.Err() != nil {
+	switch {
+	case errors.Is(res.Err(), redis.Nil):
+		return models.Banner{}, nil
+	case res.Err() != nil:
 		return models.Banner{}, res.Err()
 	}
-	if res == nil {
-		return models.Banner{}, nil
+	if res.Err() != nil {
+		return models.Banner{}, res.Err()
 	}
 	var banner models.Banner
 	if err := json.Unmarshal([]byte(res.String()), &banner); err != nil {

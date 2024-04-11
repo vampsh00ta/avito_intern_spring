@@ -6,10 +6,25 @@ import (
 	"avito_intern/internal/transport/http/request"
 	"avito_intern/internal/transport/http/response"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
+// @Summary     GetBannerForUser
+// @Description Получение баннера для пользователя
+// @Tags        Banner
+// @Accept      json
+// @Param tag_id query string true "Тэг пользователя"
+// @Param feature_id query string true "Идентификатор фичи"
+// @Param use_last_revision query string false "Получать актуальную информацию "
+// @Produce     json
+// @Success     200 {object} response.GetBannerForUser
+// @Failure     400 {object} response.Error Некорректные данные
+// @Failure     401 {object} response.Error Пользователь не авторизован
+// @Failure     403 {object} response.Error Пользователь не имеет доступа
+// @Failure     404 {object} response.Error Баннер не найден
+// @Failure     500 {object} response.Error Внутренняя ошибка сервера
+// @Security ApiKeyAuth
+// @Router      /user_banner [get]
 func (t transport) GetBannerForUser(w http.ResponseWriter, r *http.Request) {
 	methodName := "GetBannerForUser"
 
@@ -40,6 +55,23 @@ func (t transport) GetBannerForUser(w http.ResponseWriter, r *http.Request) {
 	t.handleHTTPOk(w, response.GetBannerForUser{Content: userBanner.Content}, methodName, http.StatusOK)
 }
 
+// @Summary     GetBanners
+// @Description Получение всех баннеров c фильтрацией по фиче и/или тегу
+// @Tags        Banner
+// @Accept      json
+// @Param feature_id query string false "Идентификатор фичи"
+// @Param tag_id query string false "Идентификатор тега"
+// @Param limit query string false "Лимит"
+// @Param offset query string false "Оффсет"
+// @Produce     json
+// @Success     200 {object} response.GetBanners
+// @Failure     400 {object} response.Error Некорректные данные
+// @Failure     401 {object} response.Error Пользователь не авторизован
+// @Failure     403 {object} response.Error Пользователь не имеет доступа
+// @Failure     404 {object} response.Error Баннеры не найдены
+// @Failure     500 {object} response.Error Внутренняя ошибка сервера
+// @Security ApiKeyAuth
+// @Router      /banner [get]
 func (t transport) GetBanners(w http.ResponseWriter, r *http.Request) {
 	methodName := "GetBanners"
 
@@ -63,6 +95,19 @@ func (t transport) GetBanners(w http.ResponseWriter, r *http.Request) {
 	t.handleHTTPOk(w, response.GetBanners(banners), methodName, http.StatusOK)
 }
 
+// @Summary     DeleteBannerByID
+// @Description Удаление баннера по идентификатору
+// @Tags        Banner
+// @Produce     json
+// @Param        id   path      int  true  "Идентификатор баннера"
+// @Success     204  "Баннер успешно удален"
+// @Failure     400  {object} response.Error "Некорректные данные"
+// @Failure     401  {object} response.Error "Пользователь не авторизован"
+// @Failure     403  {object} response.Error "Пользователь не имеет доступа"
+// @Failure     404  {object} response.Error "Баннер не найден"
+// @Failure     500  {object} response.Error "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
+// @Router      /banner/{id} [delete]
 func (t transport) DeleteBannerByID(w http.ResponseWriter, r *http.Request) {
 	methodName := "DeleteBannerByID"
 
@@ -82,9 +127,22 @@ func (t transport) DeleteBannerByID(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	t.handleHTTPOk(w, nil, methodName, http.StatusCreated)
+	t.handleHTTPOk(w, nil, methodName, http.StatusNoContent)
 }
 
+// @Summary     CreateBanner
+// @Description Создание нового баннера
+// @Tags        Banner
+// @Accept      json
+// @Produce     json
+// @Param data body request.CreateBanner true "Модель запроса"
+// @Success     201 {object} response.CreateBanner "Created"
+// @Failure     400 {object} response.Error Некорректные данные
+// @Failure     401 {object} response.Error Пользователь не авторизован
+// @Failure     404 {object} response.Error Баннер для тэга не найден
+// @Failure     500 {object} response.Error Внутренняя ошибка сервера
+// @Security ApiKeyAuth
+// @Router      /banner [post]
 func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 	methodName := "CreateBanner"
 
@@ -105,7 +163,7 @@ func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if ok := json.Valid([]byte(req.Content)); !ok {
-		t.handleHTTPError(w, fmt.Errorf(errs.IncorrectJSONErr), methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, errs.IncorrectJSONErr, methodName, http.StatusBadRequest)
 		return
 	}
 	banner := models.Banner{
@@ -123,6 +181,21 @@ func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 	t.handleHTTPOk(w, response.CreateBanner{ID: id}, methodName, http.StatusCreated)
 }
 
+// @Summary     ChangeBanner
+// @Description Обновление содержимого баннера
+// @Tags        Banner
+// @Accept      json
+// @Produce     json
+// @Param        id   path      int  true  "Идентификатор баннера"
+// @Param data body request.CreateBanner true "Модель запроса"
+// @Success     201 {object} response.CreateBanner "Created"
+// @Failure     400 {object} response.Error Некорректные данные
+// @Failure     401 {object} response.Error Пользователь не авторизован
+// @Failure     403 {object} response.Error Пользователь не имеет доступа
+// @Failure     404 {object} response.Error Баннер не найден
+// @Failure     500 {object} response.Error Внутренняя ошибка сервера
+// @Security ApiKeyAuth
+// @Router      /banner/{id} [patch]
 func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
 	methodName := "ChangeBanner"
 
@@ -145,7 +218,7 @@ func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
 
 	if req.Content != nil {
 		if ok := IsJSON(*req.Content); !ok {
-			t.handleHTTPError(w, fmt.Errorf(errs.IncorrectJSONErr), methodName, http.StatusBadRequest)
+			t.handleHTTPError(w, errs.IncorrectJSONErr, methodName, http.StatusBadRequest)
 			return
 		}
 	}
@@ -164,6 +237,20 @@ func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
 	t.handleHTTPOk(w, nil, methodName, http.StatusCreated)
 }
 
+// @Summary     DeleteBannerByTagAndFeature
+// @Description Удаление банера по  тэгу и фиче
+// @Tags        Banner
+// @Accept      json
+// @Produce     json
+// @Param data body request.DeleteBannerByTagAndFeature true "Модель запроса"
+// @Success     204 {object} response.DeleteBannerByTagAndFeature "Deleted"
+// @Failure     400 {object} response.Error "Некорректные данные"
+// @Failure     401 {object} response.Error "Пользователь не авторизован"
+// @Failure     403 {object} response.Error "Пользователь не имеет доступа"
+// @Failure     404 {object} response.Error "Баннер не найден"
+// @Failure     500 {object} response.Error "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
+// @Router      /banner [delete]
 func (t transport) DeleteBannerByTagAndFeature(w http.ResponseWriter, r *http.Request) {
 	methodName := "DeleteBannerByTagAndFeature"
 
@@ -192,6 +279,20 @@ func (t transport) DeleteBannerByTagAndFeature(w http.ResponseWriter, r *http.Re
 	t.handleHTTPOk(w, response.DeleteBannerByTagAndFeature{ID: id}, methodName, http.StatusCreated)
 }
 
+// @Summary     GetBannerWithHistory
+// @Description История изменений банера
+// @Tags        Banner
+// @Accept      json
+// @Produce     json
+// @Param        id   path      int  true  "Идентификатор баннера"
+// @Success     200 {object} response.GetBannerHistory "История"
+// @Failure     400 {object} response.Error Некорректные данные
+// @Failure     401 {object} response.Error Пользователь не авторизован
+// @Failure     403 {object} response.Error Пользователь не имеет доступа
+// @Failure     404 {object} response.Error История  не найдена
+// @Failure     500 {object} response.Error Внутренняя ошибка сервера
+// @Security ApiKeyAuth
+// @Router      /banner_history [get]
 func (t transport) GetBannerWithHistory(w http.ResponseWriter, r *http.Request) {
 	methodName := "GetBannerWithHistory"
 
@@ -217,5 +318,6 @@ func (t transport) GetBannerWithHistory(w http.ResponseWriter, r *http.Request) 
 
 		return
 	}
-	t.handleHTTPOk(w, banners, methodName, http.StatusOK)
+
+	t.handleHTTPOk(w, response.GetBannerHistory(banners), methodName, http.StatusOK)
 }
