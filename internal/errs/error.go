@@ -24,14 +24,18 @@ const (
 )
 
 func Handle(err error) error {
+	switch {
+	case errors.Is(err, pgx.ErrNoRows):
+		return fmt.Errorf(NoRowsInResultErr)
+
+	}
+
 	if pgErr, ok := err.(*pgconn.PgError); ok {
-		switch pgErr.Code {
-		case "23505":
+		if pgErr.Code == "23505" {
 			return fmt.Errorf(DublicateErr)
+
 		}
 	}
-	if errors.Is(err, pgx.ErrNoRows) {
-		return fmt.Errorf(NoRowsInResultErr)
-	}
+
 	return err
 }

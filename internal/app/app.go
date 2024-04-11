@@ -1,4 +1,4 @@
-package vk
+package app
 
 import (
 	"avito_intern/config"
@@ -21,7 +21,6 @@ import (
 	//"go.uber.org/zap".
 )
 
-// Run creates objects via constructors.
 func Run(cfg *config.Config) {
 	ctx := context.Background()
 
@@ -37,15 +36,17 @@ func Run(cfg *config.Config) {
 		DB:       cfg.Redis.DB,
 	})
 	redisrepo := redisrep.New(clientRedis)
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
 
-	srvc := service.New(psqlrepo, redisrepo, cfg)
+	srvcLogger := logger.Sugar()
+	srvc := service.New(psqlrepo, redisrepo, cfg, srvcLogger)
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM, syscall.SIGTERM)
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-	sugar := logger.Sugar()
-	t := transport.New(srvc, sugar)
+
+	trptLogger := logger.Sugar()
+	t := transport.New(srvc, trptLogger)
 
 	log.Print("Listening...")
 

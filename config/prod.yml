@@ -7,15 +7,15 @@ http:
 
 logger:
   log_level: 'debug'
-  rollbar_env: 'avito_intern'
+  rollbar_env: 'docker_avito'
 jwt:
   secret_key: "slatt"
 postgres:
-  username: "avito_intern"
-  password: "avito_intern"
-  host: "localhost"
+  username: "docker_avito"
+  password: "docker_avito"
+  host: "db"
   port: "5432"
-  name: "avito_intern"
+  name: "docker_avito"
   pool_max: 10
 redis:
   address: "localhost:6379"
