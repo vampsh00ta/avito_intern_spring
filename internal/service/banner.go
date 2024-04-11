@@ -16,20 +16,24 @@ type Banner interface {
 }
 
 func (s service) ChangeBanner(ctx context.Context, ID int, banner models.BannerChange) error {
-	ctx, err := s.db.Begin(ctx)
+	var err error
+	ctx, err = s.db.Begin(ctx)
 	if err != nil {
 		return err
 	}
-	defer s.db.Commit(ctx)
+	defer func() {
+		errTx := s.db.Commit(ctx)
+		if err != nil {
+			err = errTx
+		}
+	}()
 	currBanner, err := s.db.GetBannerByID(ctx, ID)
 	if err != nil {
 		s.db.Rollback(ctx)
-
 		return err
 	}
 	if err := s.db.ChangeBanner(ctx, ID, banner); err != nil {
 		s.db.Rollback(ctx)
-
 		return err
 	}
 	if err := s.db.CreateHistoryBanner(ctx, currBanner); err != nil {
@@ -85,7 +89,12 @@ func (s service) CreateBanner(ctx context.Context, banner models.Banner) (int, e
 	if err != nil {
 		return -1, err
 	}
-	defer s.db.Commit(ctx)
+	defer func() {
+		errTx := s.db.Commit(ctx)
+		if err != nil {
+			err = errTx
+		}
+	}()
 	res, err := s.db.CreateBanner(ctx, banner)
 	if err != nil {
 		s.db.Rollback(ctx)
@@ -101,11 +110,19 @@ func (s service) DeleteBannerByTagAndFeature(ctx context.Context, featureID, tag
 	if err != nil {
 		return -1, err
 	}
-	defer s.db.Commit(ctx)
+	defer func() {
+		errTx := s.db.Commit(ctx)
+		if err != nil {
+			err = errTx
+		}
+	}()
 	id, err := s.db.DeleteBannerByTagAndFeature(ctx, featureID, tagID)
 	if err != nil {
 
-		s.db.Rollback(ctx)
+		rollBackErr := s.db.Rollback(ctx)
+		if rollBackErr != nil {
+			return -1, rollBackErr
+		}
 		return -1, err
 	}
 	return id, nil

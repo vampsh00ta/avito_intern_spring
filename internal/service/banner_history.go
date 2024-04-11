@@ -11,8 +11,12 @@ import (
 
 type BannerHistory interface {
 	GetBannerWithHistory(ctx context.Context, bannerID, limit int) ([]models.Banner, error)
-	bannerHistoryCleaner(limit int)
+	bannerHistoryCleaner(serviceError chan<- error, done <-chan bool, limit int)
 }
+
+const (
+	bannerHistoryCleanerPeriod = time.Minute * 1
+)
 
 func (s service) GetBannerWithHistory(ctx context.Context, bannerID, limit int) ([]models.Banner, error) {
 	var res []models.Banner
@@ -27,9 +31,8 @@ func (s service) GetBannerWithHistory(ctx context.Context, bannerID, limit int) 
 	return res, err
 }
 
-func (s service) bannerHistoryCleaner(limit int) {
-	ticker := time.NewTicker(time.Second)
-	done := make(chan bool)
+func (s service) bannerHistoryCleaner(serviceError chan<- error, done <-chan bool, limit int) {
+	ticker := time.NewTicker(bannerHistoryCleanerPeriod)
 	ctx := context.Background()
 	go func() {
 		for {
@@ -37,10 +40,8 @@ func (s service) bannerHistoryCleaner(limit int) {
 			case <-done:
 				return
 			case <-ticker.C:
-
 				if err := s.db.CleanBannerHistory(ctx, limit); err != nil && !errors.Is(err, pgx.ErrNoRows) {
-					<-done
-					return
+					serviceError <- err
 				}
 
 			}

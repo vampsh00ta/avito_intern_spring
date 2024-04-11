@@ -2,6 +2,8 @@ package service
 
 import (
 	"avito_intern/config"
+	"go.uber.org/zap"
+
 	//"avito_intern/config".
 	psqlrepo "avito_intern/internal/repository/psql"
 	redisrepo "avito_intern/internal/repository/redis"
@@ -13,17 +15,31 @@ type Service interface {
 	Auth
 }
 type service struct {
-	db    psqlrepo.Repository
-	cache redisrepo.Repository
-	cfg   *config.Config
+	db     psqlrepo.Repository
+	cache  redisrepo.Repository
+	cfg    *config.Config
+	logger *zap.SugaredLogger
 }
 
-func New(psqlrepo psqlrepo.Repository, redisrepo redisrepo.Repository, cfg *config.Config) Service {
+func New(psqlrepo psqlrepo.Repository,
+	redisrepo redisrepo.Repository,
+	cfg *config.Config,
+	logger *zap.SugaredLogger) Service {
 	srvc := &service{
 		psqlrepo,
 		redisrepo,
 		cfg,
+		logger,
 	}
-	srvc.bannerHistoryCleaner(3)
+	doneBannerHistoryCleaner := make(chan bool)
+	serviceErrorer := make(chan error)
+
+	srvc.bannerHistoryCleaner(serviceErrorer, doneBannerHistoryCleaner, 3)
+	go func(serviceErrorer <-chan error) {
+		for err := range serviceErrorer {
+			srvc.logger.Error(err)
+			//fmt.Println(err)
+		}
+	}(serviceErrorer)
 	return srvc
 }
