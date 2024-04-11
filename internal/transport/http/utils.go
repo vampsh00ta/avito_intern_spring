@@ -36,11 +36,11 @@ func IsJSON(str string) bool {
 func getIDFromURL(r *http.Request) (int, error) {
 	strID := r.PathValue("id")
 	if strID == "" {
-		return -1, fmt.Errorf("nil id")
+		return -1, fmt.Errorf(errs.NilIDErr)
 	}
 	ID, err := strconv.Atoi(strID)
 	if err != nil {
-		return -1, fmt.Errorf("wrong id")
+		return -1, fmt.Errorf(errs.WrongIDErr)
 	}
 	return ID, nil
 }

@@ -106,7 +106,7 @@ func (db Pg) GetBannerWithHistory(ctx context.Context, bannerID, limit int) ([]m
 func (db Pg) CleanBannerHistory(ctx context.Context, limit int) error {
 	client := db.getDB(ctx)
 	q := `
-		delete from banner_history whre id in (
+		delete from banner_history where id in (
 		    select id from  
               (select 
                    id, 

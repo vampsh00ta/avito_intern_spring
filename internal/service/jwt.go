@@ -66,6 +66,7 @@ func (s service) extractUserFromToken(requestToken string) (*JwtCustomClaim, err
 		return []byte(s.cfg.Secret), nil
 	})
 	if err != nil {
+
 		return nil, err
 	}
 
