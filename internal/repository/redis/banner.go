@@ -16,24 +16,23 @@ type Banner interface {
 
 func (r Redis) GetUserBanner(ctx context.Context, tagID, featureID int32) (models.Banner, error) {
 	key := strconv.Itoa(int(tagID)) + "_" + strconv.Itoa(int(featureID))
-	res := r.client.Get(ctx, key)
+	res, err := r.client.Get(ctx, key).Result()
 	switch {
-	case errors.Is(res.Err(), redis.Nil):
+	case errors.Is(err, redis.Nil):
 		return models.Banner{}, nil
-	case res.Err() != nil:
-		return models.Banner{}, res.Err()
+	case err != nil:
+		return models.Banner{}, err
 	}
-	if res.Err() != nil {
-		return models.Banner{}, res.Err()
-	}
+
 	var banner models.Banner
-	if err := json.Unmarshal([]byte(res.String()), &banner); err != nil {
+	if err := json.Unmarshal([]byte(res), &banner); err != nil {
 		return models.Banner{}, err
 	}
 	return banner, nil
 }
 
 func (r Redis) SetUserBanner(ctx context.Context, tagID, featureID int32, banner models.Banner) error {
+	banner.Feature = featureID
 	bannerBytes, err := json.Marshal(banner)
 	if err != nil {
 		return err
