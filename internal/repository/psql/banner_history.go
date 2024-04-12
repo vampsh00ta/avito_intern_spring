@@ -28,22 +28,32 @@ func (db Pg) CreateHistoryBanner(ctx context.Context, banner models.Banner) erro
 		Scan(&bannerHistoryID); err != nil {
 		return err
 	}
-	if err := db.AddTagsToHistoryBanner(ctx, bannerHistoryID, banner.Feature, banner.Tags...); err != nil {
-		return err
+	fmt.Println(banner)
+	if len(banner.Tags) > 0 {
+		if err := db.AddTagsToHistoryBanner(ctx, bannerHistoryID, banner.Feature, banner.Tags...); err != nil {
+			return err
+		}
+	} else {
+		q := `insert into banner_tag_history (banner_history_id,feature_id,tag_id) values ($1,$2,null) returning banner_history_id`
+		if err := client.QueryRow(ctx, q, bannerHistoryID, banner.Feature).Scan(&banner.ID); err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 
 // insert into history_banner_tag (banner_id,feature_id,tag_id) values (args...) returning banner_id.
 func (db Pg) AddTagsToHistoryBanner(ctx context.Context, bannerHistoryID int, featureID int32, tags ...int32) error {
 	client := db.getDB(ctx)
-	q := `insert into banner_tag_history (banner_history_id,feature_id,tag_id) values`
+	q := `insert into banner_tag_history (banner_history_id,feature_id,tag_id) values `
 	input := []any{bannerHistoryID, featureID}
 	for i, tag := range tags {
 		q += fmt.Sprintf(" ($1,$2,$%d),", i+3)
 		input = append(input, tag)
 	}
 	q = q[:len(q)-1] + " returning banner_history_id"
+
 	if err := client.QueryRow(ctx, q, input...).Scan(&bannerHistoryID); err != nil {
 		return err
 	}
@@ -91,7 +101,10 @@ func (db Pg) GetBannerWithHistory(ctx context.Context, bannerID, limit int) ([]m
 			}
 			mapping[id] = curr
 		}
-		curr.Tags = append(curr.Tags, rowRes.Tag)
+		if rowRes.Tag != nil {
+			curr.Tags = append(curr.Tags, *rowRes.Tag)
+		}
+
 	}
 
 	res := make([]models.Banner, len(mapping))

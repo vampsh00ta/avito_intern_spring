@@ -4,7 +4,7 @@ import "fmt"
 
 func buildGetBannersQuery(tagID, featureID, limit, offset int32) (string, []any) {
 	q := `select banner.*,banner_tag.tag_id,banner_tag.feature_id   from banner 
-		join `
+		 join `
 
 	argCount := 1
 	args := []any{}
@@ -49,7 +49,7 @@ func buildGetBannersQuery(tagID, featureID, limit, offset int32) (string, []any)
 	}
 	q += `
  banner_filter on banner_filter.banner_id = banner.id
-	join banner_tag on banner_filter.banner_id = banner_tag.banner_id
+	 join banner_tag on banner_filter.banner_id = banner_tag.banner_id
 `
 
 	return q, args

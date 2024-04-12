@@ -96,7 +96,11 @@ func (db Pg) GetBannerByID(ctx context.Context, ID int) (models.Banner, error) {
 
 		res.UpdatedAt = bannerTag.UpdatedAt
 		res.CreatedAt = bannerTag.CreatedAt
-		res.Tags = append(res.Tags, bannerTag.Tag)
+		if bannerTag.Tag != nil {
+			res.Tags = append(res.Tags, *bannerTag.Tag)
+
+		}
+
 	}
 	return res, nil
 }
@@ -114,11 +118,15 @@ func (db Pg) GetBanners(ctx context.Context, tagID, featureID, limit, offset int
 	q, args := buildGetBannersQuery(tagID, featureID, limit, offset)
 	rows, err := client.Query(ctx, q, args...)
 	if err != nil {
+
 		return nil, err
 	}
 	rowReses, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.BannerTags])
 	if err != nil {
 		return nil, err
+	}
+	if len(rowReses) == 0 {
+		return nil, pgx.ErrNoRows
 	}
 
 	mapping := make(map[int]*models.Banner)
@@ -138,7 +146,10 @@ func (db Pg) GetBanners(ctx context.Context, tagID, featureID, limit, offset int
 			}
 			mapping[id] = curr
 		}
-		curr.Tags = append(curr.Tags, rowRes.Tag)
+		if rowRes.Tag != nil {
+			curr.Tags = append(curr.Tags, *rowRes.Tag)
+
+		}
 	}
 
 	res := make([]models.Banner, len(mapping))
@@ -176,23 +187,42 @@ func (db Pg) DeleteBannerByTagAndFeature(ctx context.Context, featureID, tagID i
 
 func (db Pg) ChangeBannerTagsOrFeature(ctx context.Context, ID int, featureID *int32, tagIDs ...int32) error {
 	client := db.getDB(ctx)
+
 	if len(tagIDs) > 0 {
 		var res int32
+		fmt.Println("1")
+
 		q := `delete from banner_tag where banner_id = $1 returning feature_id`
+
 		if err := client.QueryRow(ctx, q, ID).Scan(&res); err != nil {
 			return err
 		}
 		if featureID == nil {
 			featureID = &res
 		}
-
 		if err := db.AddTagsToBanner(ctx, ID, *featureID, tagIDs...); err != nil {
 			return err
 		}
 
-	} else if featureID != nil {
+	} else if featureID != nil && len(tagIDs) == 0 {
+		fmt.Println("2")
+
 		q := `update  banner_tag set feature_id = $2 where banner_id = $1 returning banner_id`
 		if err := client.QueryRow(ctx, q, ID, *featureID).Scan(&ID); err != nil {
+			return err
+		}
+	} else {
+		fmt.Println("3")
+
+		var res int32
+		q := `delete from banner_tag where banner_id = $1 returning feature_id`
+
+		if err := client.QueryRow(ctx, q, ID).Scan(&res); err != nil {
+			return err
+		}
+		q = `insert into   banner_tag (banner_id,feature_id,tag_id) values($1,$2,null) returning banner_id`
+
+		if err := client.QueryRow(ctx, q, ID, res).Scan(&ID); err != nil {
 			return err
 		}
 	}
@@ -221,13 +251,14 @@ func (db Pg) ChangeBanner(ctx context.Context, ID int, banner models.BannerChang
 	if err := client.QueryRow(ctx, q, args...).Scan(&ID); err != nil {
 		return err
 	}
-
 	argsTags := []int32{}
-	argsTags = append(argsTags, *banner.Tags...)
+	if banner.Tags != nil {
+		argsTags = append(argsTags, *banner.Tags...)
+
+	}
 
 	if err := db.ChangeBannerTagsOrFeature(ctx, ID, banner.Feature, argsTags...); err != nil {
 		return err
 	}
-
 	return nil
 }
