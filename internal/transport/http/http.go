@@ -23,6 +23,12 @@ type transport struct {
 	l *zap.SugaredLogger
 }
 
+func NewTest(t service.Service, l *zap.SugaredLogger) *transport {
+	r := &transport{t, l}
+
+	return r
+
+}
 func New(t service.Service, l *zap.SugaredLogger) http.Handler {
 	r := &transport{t, l}
 	mux := http.NewServeMux()

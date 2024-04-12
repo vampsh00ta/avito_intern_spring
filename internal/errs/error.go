@@ -2,7 +2,9 @@ package errs
 
 import (
 	"errors"
+	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -17,12 +19,14 @@ var (
 	AuthErr           = errors.New("auth error")
 	InvalidTokenErr   = errors.New("invalid token")
 	NoReferenceErr    = errors.New("no such tag/feature")
+	UnknownErr        = errors.New("unknown error")
+	ValidationError   = errors.New("incorrect input data")
 
 	NotAdminErr       = errors.New("you are not admin")
 	NoUserSuchUserErr = errors.New("no such user")
 	NotLoggedErr      = errors.New("you are not logged")
 	WrongRoleErr      = errors.New("wrong role")
-	NoRowsInResultErr = errors.New("no data affected")
+	NoRowsInResultErr = errors.New("no such data")
 )
 
 func Handle(err error) error {
@@ -41,8 +45,15 @@ func Handle(err error) error {
 			return DublicateErr
 		case "23503":
 			return NoReferenceErr
+		default:
+			return UnknownErr
 		}
-
+	}
+	if _, ok := err.(validator.ValidationErrors); ok {
+		return ValidationError
+	}
+	if _, ok := err.(redis.Error); ok {
+		return UnknownErr
 	}
 
 	return err

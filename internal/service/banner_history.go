@@ -11,7 +11,7 @@ import (
 
 type BannerHistory interface {
 	GetBannerWithHistory(ctx context.Context, bannerID, limit int) ([]models.Banner, error)
-	bannerHistoryCleaner(serviceError chan<- error, done <-chan bool, limit int)
+	BannerHistoryCleaner(serviceError chan<- error, done <-chan bool, limit int)
 }
 
 const (
@@ -31,7 +31,7 @@ func (s service) GetBannerWithHistory(ctx context.Context, bannerID, limit int) 
 	return res, err
 }
 
-func (s service) bannerHistoryCleaner(serviceError chan<- error, done <-chan bool, limit int) {
+func (s service) BannerHistoryCleaner(serviceError chan<- error, done <-chan bool, limit int) {
 	ticker := time.NewTicker(bannerHistoryCleanerPeriod)
 	ctx := context.Background()
 	go func() {

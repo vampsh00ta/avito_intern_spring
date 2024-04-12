@@ -34,7 +34,7 @@ func New(psqlrepo psqlrepo.Repository,
 	doneBannerHistoryCleaner := make(chan bool)
 	serviceErrorer := make(chan error)
 
-	srvc.bannerHistoryCleaner(serviceErrorer, doneBannerHistoryCleaner, 3)
+	srvc.BannerHistoryCleaner(serviceErrorer, doneBannerHistoryCleaner, 3)
 	go func(serviceErrorer <-chan error) {
 		for err := range serviceErrorer {
 			srvc.logger.Error(err)

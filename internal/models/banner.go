@@ -14,7 +14,7 @@ type Banner struct {
 
 type BannerTags struct {
 	ID        int       `json:"banner_id" db:"id"`
-	Tag       int32     `json:"tag_id" db:"tag_id"`
+	Tag       *int32    `json:"tag_id" db:"tag_id"`
 	Feature   int32     `json:"feature_id" db:"feature_id"`
 	Content   string    `json:"content" db:"content"`
 	IsActive  bool      `json:"is_active" db:"is_active"`
@@ -24,7 +24,7 @@ type BannerTags struct {
 type BannerHistoryTags struct {
 	ID              int       `json:"banner_id" db:"id"`
 	BannerHistoryID int       `json:"banner_history_id" db:"banner_history_id"`
-	Tag             int32     `json:"tag_id" db:"tag_id"`
+	Tag             *int32    `json:"tag_id" db:"tag_id"`
 	Feature         int32     `json:"feature_id" db:"feature_id"`
 	Content         string    `json:"content" db:"content"`
 	IsActive        bool      `json:"is_active" db:"is_active"`

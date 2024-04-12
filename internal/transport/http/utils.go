@@ -17,11 +17,14 @@ func (t transport) handleHTTPError(w http.ResponseWriter, err error, method stri
 
 	logError := err
 	err = errs.Handle(err)
-	if errors.Is(err, errs.NoRowsInResultErr) {
-		fmt.Println(err)
+	if errors.Is(err, errs.NoRowsInResultErr) ||
+		errors.Is(err, errs.NoReferenceErr) {
 		status = http.StatusNotFound
+
 	}
+
 	w.WriteHeader(status)
+
 	json.NewEncoder(w).Encode(response.Error{Error: err.Error()})
 	t.l.Error(method, zap.Error(logError))
 }
@@ -46,6 +49,7 @@ func getIDFromURL(r *http.Request) (int, error) {
 	if strID == "" {
 		return -1, errs.NilIDErr
 	}
+	fmt.Println(strID)
 	ID, err := strconv.Atoi(strID)
 	if err != nil {
 		return -1, errs.WrongIDErr

@@ -13,14 +13,14 @@ import (
 // @Accept      json
 // @Produce     json
 // @Param data body request.Login true "Модель запроса"
-// @Success     201 {object} response.Login "Created"
+// @Success     201 {object} response.Login "Access token"
 // @Failure     400 {object} response.Error Некорректные данные
 // @Failure     401 {object} response.Error Пользователь не авторизован
 // @Failure     403 {object} response.Error Пользователь не имеет доступа
 // @Failure     404 {object} response.Error Пользователь не найден
 // @Failure     500 {object} response.Error Внутренняя ошибка сервера
 // @Security ApiKeyAuth
-// @Router      /banner/{id} [patch]
+// @Router      /login [post]
 func (t transport) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

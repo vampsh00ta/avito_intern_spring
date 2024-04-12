@@ -47,6 +47,13 @@ definitions:
     - feature_id
     - tag_id
     type: object
+  request.Login:
+    properties:
+      username:
+        type: string
+    required:
+    - username
+    type: object
   response.CreateBanner:
     properties:
       id:
@@ -65,6 +72,11 @@ definitions:
   response.GetBannerForUser:
     properties:
       content:
+        type: string
+    type: object
+  response.Login:
+    properties:
+      access:
         type: string
     type: object
 host: localhost:8000
@@ -344,6 +356,50 @@ paths:
       summary: GetBannerWithHistory
       tags:
       - Banner
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Авторизация
+      parameters:
+      - description: Модель запроса
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.Login'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Login'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Login
+      tags:
+      - Login
   /user_banner:
     get:
       consumes:
