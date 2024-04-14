@@ -34,14 +34,18 @@ func New(psqlrepo psqlrepo.Repository,
 		logger,
 	}
 	doneBannerHistoryCleaner := make(chan bool)
-	serviceErrorer := make(chan error)
+	msgs := make(chan error)
 
-	srvc.BannerHistoryCleaner(serviceErrorer, doneBannerHistoryCleaner, 3)
-	go func(serviceErrorer <-chan error) {
-		for err := range serviceErrorer {
-			srvc.logger.Error(err)
-			// fmt.Println(err)
+	srvc.BannerHistoryCleaner(msgs, doneBannerHistoryCleaner, 3)
+	go func(msgs <-chan error) {
+		for err := range msgs {
+			if err != nil {
+				srvc.logger.Error(err)
+			} else {
+				srvc.logger.Info("cleared history")
+
+			}
 		}
-	}(serviceErrorer)
+	}(msgs)
 	return srvc
 }
