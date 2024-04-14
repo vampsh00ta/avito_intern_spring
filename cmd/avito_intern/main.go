@@ -2,7 +2,7 @@ package main
 
 import (
 	"avito_intern/config"
-	app "avito_intern/internal/app"
+	"avito_intern/internal/app"
 	"log"
 )
 

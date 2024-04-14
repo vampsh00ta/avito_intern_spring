@@ -43,7 +43,6 @@ func New(psqlrepo psqlrepo.Repository,
 				srvc.logger.Error(err)
 			} else {
 				srvc.logger.Info("cleared history")
-
 			}
 		}
 	}(msgs)
