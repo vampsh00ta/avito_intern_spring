@@ -37,16 +37,6 @@ definitions:
     - is_active
     - tag_ids
     type: object
-  request.DeleteBannerByTagAndFeature:
-    properties:
-      feature_id:
-        type: integer
-      tag_id:
-        type: integer
-    required:
-    - feature_id
-    - tag_id
-    type: object
   request.Login:
     properties:
       username:
@@ -88,16 +78,18 @@ info:
 paths:
   /banner:
     delete:
-      consumes:
-      - application/json
       description: Удаление банера по  тэгу и фиче
       parameters:
-      - description: Модель запроса
-        in: body
-        name: data
+      - description: Идентификатор тега
+        in: query
+        name: tag_id
         required: true
-        schema:
-          $ref: '#/definitions/request.DeleteBannerByTagAndFeature'
+        type: integer
+      - description: Идентификатор фичи
+        in: query
+        name: feature_id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -311,7 +303,7 @@ paths:
       summary: ChangeBanner
       tags:
       - Banner
-  /banner_history:
+  /banner_history/{id}:
     get:
       consumes:
       - application/json
@@ -321,6 +313,10 @@ paths:
         in: path
         name: id
         required: true
+        type: integer
+      - description: Лимит (до 3 )
+        in: query
+        name: limit
         type: integer
       produces:
       - application/json
@@ -372,7 +368,7 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created
+          description: Access token
           schema:
             $ref: '#/definitions/response.Login'
         "400":

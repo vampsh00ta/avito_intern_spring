@@ -7,8 +7,6 @@ import (
 	"avito_intern/internal/service"
 	"avito_intern/pkg/client"
 	"context"
-	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -23,10 +21,14 @@ import (
 
 func Run(cfg *config.Config) {
 	ctx := context.Background()
-
+	logger, err := zap.NewProduction()
+	if err != nil {
+		panic(err)
+	}
+	defer logger.Sync()
 	pg, err := client.New(ctx, 5, cfg.PG)
 	if err != nil {
-		log.Fatal(fmt.Errorf("avito - Run - postgres.New: %w", err))
+		logger.Fatal("app - Run - postgres.New: %w", zap.Error(err))
 	}
 	psqlrepo := psqlrep.New(pg)
 
@@ -36,8 +38,6 @@ func Run(cfg *config.Config) {
 		DB:       cfg.Redis.DB,
 	})
 	redisrepo := redisrep.New(clientRedis)
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
 
 	srvcLogger := logger.Sugar()
 	srvc := service.New(psqlrepo, redisrepo, cfg, srvcLogger)
@@ -48,10 +48,11 @@ func Run(cfg *config.Config) {
 	trptLogger := logger.Sugar()
 	t := transport.New(srvc, trptLogger)
 
-	log.Print("Listening...")
+	logger.Info("Listening...")
 
 	if err := http.ListenAndServe(":"+cfg.HTTP.Port, t); err != nil {
-		panic(err)
+		logger.Fatal("listening error", zap.Error(err))
+
 	}
 	select {
 	case <-interrupt:

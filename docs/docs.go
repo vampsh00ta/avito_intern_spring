@@ -170,9 +170,6 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Удаление банера по  тэгу и фиче",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -182,13 +179,18 @@ const docTemplate = `{
                 "summary": "DeleteBannerByTagAndFeature",
                 "parameters": [
                     {
-                        "description": "Модель запроса",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.DeleteBannerByTagAndFeature"
-                        }
+                        "type": "integer",
+                        "description": "Идентификатор тега",
+                        "name": "tag_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор фичи",
+                        "name": "feature_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -366,7 +368,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/banner_history": {
+        "/banner_history/{id}": {
             "get": {
                 "security": [
                     {
@@ -391,6 +393,12 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Лимит (до 3 )",
+                        "name": "limit",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -467,7 +475,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Access token",
                         "schema": {
                             "$ref": "#/definitions/response.Login"
                         }
@@ -639,21 +647,6 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
-                }
-            }
-        },
-        "request.DeleteBannerByTagAndFeature": {
-            "type": "object",
-            "required": [
-                "feature_id",
-                "tag_id"
-            ],
-            "properties": {
-                "feature_id": {
-                    "type": "integer"
-                },
-                "tag_id": {
-                    "type": "integer"
                 }
             }
         },
