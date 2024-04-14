@@ -75,7 +75,7 @@ func (db Pg) GetBannerWithHistory(ctx context.Context, bannerID, limit int) ([]m
 		 bth.tag_id,
 		 bth.feature_id   from 
 	(select * from banner_history where banner_history.banner_id = $1  order by updated_at desc limit  $2) bh 
-	join banner_tag_history as bth on  bth.banner_history_id = bh.id order  by updated_at`
+	join banner_tag_history as bth on  bth.banner_history_id = bh.id order  by updated_at desc`
 	rows, err := client.Query(ctx, q, bannerID, limit)
 	if err != nil {
 		return nil, err
@@ -84,6 +84,10 @@ func (db Pg) GetBannerWithHistory(ctx context.Context, bannerID, limit int) ([]m
 	if err != nil {
 		return nil, err
 	}
+	if len(rowReses) == 0 {
+		return nil, pgx.ErrNoRows
+	}
+
 	mapping := make(map[int]*models.Banner)
 
 	for _, rowRes := range rowReses {
