@@ -19,11 +19,6 @@ type (
 	clientKey struct{}
 )
 
-//const (
-//	txKey = iota
-//	clientKey
-//)
-
 func (db Pg) Rollback(ctx context.Context) error {
 	txCtx := ctx.Value(txKey{})
 	tx, ok := txCtx.(pgx.Tx)

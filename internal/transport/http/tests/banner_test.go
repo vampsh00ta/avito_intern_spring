@@ -7,15 +7,16 @@ import (
 	transport "avito_intern/internal/transport/http"
 	"bytes"
 	"fmt"
-	"github.com/go-playground/assert/v2"
-	"github.com/golang/mock/gomock"
-	"github.com/jackc/pgx/v5"
-	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/go-playground/assert/v2"
+	"github.com/golang/mock/gomock"
+	"github.com/jackc/pgx/v5"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestBanner_GetBannerForUser(t *testing.T) {
@@ -26,7 +27,6 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 		expectedCode int
 		expectedBody string
 	}{
-
 		{
 			name:        "ok",
 			inputParams: "?tag_id=1&feature_id=1",
@@ -39,10 +39,11 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 				{
 					"GetBannerForUser",
 					[]any{mock.Anything, int32(1), int32(1), false},
-					[]any{models.Banner{
-						Content:  "{\"title\": \"some_title\", \"text\": \"some_text\", \"url\": \"some_url\"}",
-						IsActive: true,
-					},
+					[]any{
+						models.Banner{
+							Content:  "{\"title\": \"some_title\", \"text\": \"some_text\", \"url\": \"some_url\"}",
+							IsActive: true,
+						},
 
 						nil,
 					},
@@ -64,10 +65,11 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 				{
 					"GetBannerForUser",
 					[]any{mock.Anything, int32(1), int32(1), true},
-					[]any{models.Banner{
-						Content:  "{\"title\": \"some_title\", \"text\": \"some_text\", \"url\": \"some_url\"}",
-						IsActive: true,
-					},
+					[]any{
+						models.Banner{
+							Content:  "{\"title\": \"some_title\", \"text\": \"some_text\", \"url\": \"some_url\"}",
+							IsActive: true,
+						},
 
 						nil,
 					},
@@ -88,10 +90,11 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 				{
 					"GetBannerForUser",
 					[]any{mock.Anything, int32(1), int32(1), true},
-					[]any{models.Banner{
-						Content:  "{\"title\": \"some_title\", \"text\": \"some_text\", \"url\": \"some_url\"}",
-						IsActive: false,
-					},
+					[]any{
+						models.Banner{
+							Content:  "{\"title\": \"some_title\", \"text\": \"some_text\", \"url\": \"some_url\"}",
+							IsActive: false,
+						},
 						nil,
 					},
 				},
@@ -163,7 +166,8 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 				{
 					"GetBannerForUser",
 					[]any{mock.Anything, int32(1), int32(1), false},
-					[]any{models.Banner{},
+					[]any{
+						models.Banner{},
 						errs.Unknown,
 					},
 				},
@@ -179,7 +183,6 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 
 			srvc := mock_service.NewService(t)
 			for _, mockFunc := range test.mockFuncs {
-
 				srvc.On(mockFunc.methodName, mockFunc.args...).Once().Return(mockFunc.returns...)
 			}
 
@@ -194,6 +197,7 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 		})
 	}
 }
+
 func TestBanner_GetBanners(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -202,7 +206,6 @@ func TestBanner_GetBanners(t *testing.T) {
 		expectedCode int
 		expectedBody string
 	}{
-
 		{
 			name:        "ok by tag_id",
 			inputParams: "?tag_id=1",
@@ -215,18 +218,20 @@ func TestBanner_GetBanners(t *testing.T) {
 				{
 					"GetBanners",
 					[]any{mock.Anything, int32(1), int32(0), int32(0), int32(0)},
-					[]any{[]models.Banner{models.Banner{
-						ID:        1,
-						Content:   "{\"title\": \"some_title\", \"text\": \"some_text\", \"url\": \"some_url\"}",
-						IsActive:  true,
-						UpdatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
-						CreatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
-						Feature:   1,
-						Tags: []int32{
-							1, 2, 3,
+					[]any{
+						[]models.Banner{
+							{
+								ID:        1,
+								Content:   "{\"title\": \"some_title\", \"text\": \"some_text\", \"url\": \"some_url\"}",
+								IsActive:  true,
+								UpdatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
+								CreatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
+								Feature:   1,
+								Tags: []int32{
+									1, 2, 3,
+								},
+							},
 						},
-					},
-					},
 
 						nil,
 					},
@@ -234,7 +239,7 @@ func TestBanner_GetBanners(t *testing.T) {
 			},
 			expectedCode: 200,
 			expectedBody: `[{"banner_id":1,"tag_ids":[1,2,3],"feature_id":1,"content":"{\"title\": \"some_title\", \"text\": \"some_text\", \"url\": \"some_url\"}","is_active":true,"created_at":"2000-01-01T00:00:00Z","updated_at":"2000-01-01T00:00:00Z"}]`,
-			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
+			// expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
 			name:        "ok by feature_id",
@@ -248,18 +253,20 @@ func TestBanner_GetBanners(t *testing.T) {
 				{
 					"GetBanners",
 					[]any{mock.Anything, int32(0), int32(1), int32(0), int32(0)},
-					[]any{[]models.Banner{models.Banner{
-						ID:        1,
-						Content:   "{\"title\": \"some_title\", \"text\": \"some_text\", \"url\": \"some_url\"}",
-						IsActive:  true,
-						UpdatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
-						CreatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
-						Feature:   1,
-						Tags: []int32{
-							1, 2, 3,
+					[]any{
+						[]models.Banner{
+							{
+								ID:        1,
+								Content:   "{\"title\": \"some_title\", \"text\": \"some_text\", \"url\": \"some_url\"}",
+								IsActive:  true,
+								UpdatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
+								CreatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
+								Feature:   1,
+								Tags: []int32{
+									1, 2, 3,
+								},
+							},
 						},
-					},
-					},
 
 						nil,
 					},
@@ -280,7 +287,7 @@ func TestBanner_GetBanners(t *testing.T) {
 			},
 			expectedCode: 401,
 			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged),
-			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
+			// expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
 			name:        "auth error",
@@ -307,7 +314,7 @@ func TestBanner_GetBanners(t *testing.T) {
 			},
 			expectedCode: 403,
 			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRole),
-			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
+			// expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
 			name:        "nil",
@@ -321,7 +328,8 @@ func TestBanner_GetBanners(t *testing.T) {
 				{
 					"GetBanners",
 					[]any{mock.Anything, int32(0), int32(1), int32(0), int32(0)},
-					[]any{[]models.Banner{models.Banner{}},
+					[]any{
+						[]models.Banner{{}},
 
 						pgx.ErrNoRows,
 					},
@@ -342,7 +350,8 @@ func TestBanner_GetBanners(t *testing.T) {
 				{
 					"GetBanners",
 					[]any{mock.Anything, int32(0), int32(0), int32(0), int32(0)},
-					[]any{[]models.Banner{},
+					[]any{
+						[]models.Banner{},
 
 						errs.Unknown,
 					},
@@ -359,7 +368,6 @@ func TestBanner_GetBanners(t *testing.T) {
 
 			srvc := mock_service.NewService(t)
 			for _, mockFunc := range test.mockFuncs {
-
 				srvc.On(mockFunc.methodName, mockFunc.args...).Once().Return(mockFunc.returns...)
 			}
 
@@ -383,7 +391,6 @@ func TestBanner_DeleteBannerByID(t *testing.T) {
 		expectedCode int
 		expectedBody string
 	}{
-
 		{
 			name:        "ok",
 			inputParams: "/1",
@@ -417,7 +424,7 @@ func TestBanner_DeleteBannerByID(t *testing.T) {
 			},
 			expectedCode: 401,
 			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged),
-			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
+			// expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
 			name:        "auth error",
@@ -431,7 +438,7 @@ func TestBanner_DeleteBannerByID(t *testing.T) {
 			},
 			expectedCode: 401,
 			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Auth),
-			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
+			// expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
 			name:        "wrong  role",
@@ -445,7 +452,7 @@ func TestBanner_DeleteBannerByID(t *testing.T) {
 			},
 			expectedCode: 403,
 			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRole),
-			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
+			// expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
 			name:        "nil ",
@@ -480,7 +487,6 @@ func TestBanner_DeleteBannerByID(t *testing.T) {
 					"DeleteBannerByID",
 					[]any{mock.Anything, 1},
 					[]any{
-
 						errs.Unknown,
 					},
 				},
@@ -496,7 +502,6 @@ func TestBanner_DeleteBannerByID(t *testing.T) {
 
 			srvc := mock_service.NewService(t)
 			for _, mockFunc := range test.mockFuncs {
-
 				srvc.On(mockFunc.methodName, mockFunc.args...).Once().Return(mockFunc.returns...)
 			}
 
@@ -520,7 +525,6 @@ func TestBanner_CreateBanner(t *testing.T) {
 		expectedCode int
 		expectedBody string
 	}{
-
 		{
 			name: "ok",
 			inputBody: `{
@@ -606,7 +610,7 @@ func TestBanner_CreateBanner(t *testing.T) {
 			},
 			expectedCode: 401,
 			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged),
-			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
+			// expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
 			name: "auth error",
@@ -746,7 +750,6 @@ func TestBanner_CreateBanner(t *testing.T) {
 
 			srvc := mock_service.NewService(t)
 			for _, mockFunc := range test.mockFuncs {
-
 				srvc.On(mockFunc.methodName, mockFunc.args...).Once().Return(mockFunc.returns...)
 			}
 
@@ -761,6 +764,7 @@ func TestBanner_CreateBanner(t *testing.T) {
 		})
 	}
 }
+
 func initBannerChange(banner models.Banner) models.BannerChange {
 	res := models.BannerChange{
 		Tags:     &banner.Tags,
@@ -781,7 +785,6 @@ func TestBanner_ChangeBanner(t *testing.T) {
 		expectedCode int
 		expectedBody string
 	}{
-
 		{
 			name: "ok",
 			inputBody: `{
@@ -892,7 +895,7 @@ func TestBanner_ChangeBanner(t *testing.T) {
 			},
 			expectedCode: 401,
 			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged),
-			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
+			// expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
 			name:       "auth error",
@@ -1037,7 +1040,6 @@ func TestBanner_ChangeBanner(t *testing.T) {
 
 			srvc := mock_service.NewService(t)
 			for _, mockFunc := range test.mockFuncs {
-
 				srvc.On(mockFunc.methodName, mockFunc.args...).Once().Return(mockFunc.returns...)
 			}
 
@@ -1055,20 +1057,17 @@ func TestBanner_ChangeBanner(t *testing.T) {
 
 func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputBody string
+		name       string
+		inputBody  string
+		inputParam string
 
 		mockFuncs    []MockMethod
 		expectedCode int
 		expectedBody string
 	}{
-
 		{
-			name: "ok",
-			inputBody: `{
-						"tag_id":1,
-						"feature_id":1
-						}`,
+			name:       "ok",
+			inputParam: "?tag_id=1&feature_id=1",
 			mockFuncs: []MockMethod{
 				{
 					"Permission",
@@ -1078,7 +1077,8 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 				{
 					"DeleteBannerByTagAndFeature",
 					[]any{mock.Anything, int32(1), int32(1)},
-					[]any{1,
+					[]any{
+						1,
 						nil,
 					},
 				},
@@ -1089,10 +1089,8 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 		{
 			name: "validation error",
 
-			inputBody: `{
-						"tag_id:1,
-						"feature_id":1
-						}`,
+			inputParam: "?tag_i=1&feature_id=1",
+
 			mockFuncs: []MockMethod{
 				{
 					"Permission",
@@ -1105,12 +1103,9 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 		},
 
 		{
+			name:       "not logged",
+			inputParam: "?tag_id=1&feature_id=1",
 
-			name: "not logged",
-			inputBody: `{
-						"tag_id":1,
-						"feature_id":1
-						}`,
 			mockFuncs: []MockMethod{
 				{
 					"Permission",
@@ -1119,7 +1114,8 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged)},
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged),
+		},
 		{
 			name: "auth error",
 			inputBody: `{
@@ -1137,12 +1133,9 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Auth),
 		},
 		{
-			name: "wrong  role",
-			inputBody: `{
-						"tag_id":[1],
-						"feature_id":1
-						
-						}`,
+			name:       "wrong  role",
+			inputParam: "?tag_id=1&feature_id=1",
+
 			mockFuncs: []MockMethod{
 				{
 					"Permission",
@@ -1155,11 +1148,9 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 		},
 
 		{
-			name: "server error",
-			inputBody: `{
-						"tag_id":1,
-						"feature_id":1
-						}`,
+			name:       "server error",
+			inputParam: "?tag_id=1&feature_id=1",
+
 			mockFuncs: []MockMethod{
 				{
 					"Permission",
@@ -1169,7 +1160,8 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 				{
 					"DeleteBannerByTagAndFeature",
 					[]any{mock.Anything, int32(1), int32(1)},
-					[]any{-1,
+					[]any{
+						-1,
 						errs.Unknown,
 					},
 				},
@@ -1180,10 +1172,8 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 		{
 			name: "no such tag/feature",
 
-			inputBody: `{
-						"tag_id":1,
-						"feature_id":1
-						}`,
+			inputParam: "?tag_id=1&feature_id=1",
+
 			mockFuncs: []MockMethod{
 				{
 					"Permission",
@@ -1203,11 +1193,8 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoRowsInResult),
 		},
 		{
-			name: "unknown error",
-			inputBody: `{
-						"tag_id":1,
-						"feature_id":1
-						}`,
+			name:       "unknown error",
+			inputParam: "?tag_id=1&feature_id=1",
 
 			mockFuncs: []MockMethod{
 				{
@@ -1235,7 +1222,6 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 
 			srvc := mock_service.NewService(t)
 			for _, mockFunc := range test.mockFuncs {
-
 				srvc.On(mockFunc.methodName, mockFunc.args...).Once().Return(mockFunc.returns...)
 			}
 
@@ -1243,30 +1229,27 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 			w := httptest.NewRecorder()
 			mux := http.NewServeMux()
 			mux.HandleFunc("DELETE /banner", r.DeleteBannerByTagAndFeature)
-			req := httptest.NewRequest("DELETE", "/banner", bytes.NewBufferString(test.inputBody))
+			req := httptest.NewRequest("DELETE", "/banner"+test.inputParam, nil)
 			mux.ServeHTTP(w, req)
 			assert.Equal(t, test.expectedCode, w.Code)
 			assert.Equal(t, test.expectedBody, strings.TrimSpace(w.Body.String()))
 		})
 	}
 }
+
 func TestBanner_GetBannerWithHistory(t *testing.T) {
 	tests := []struct {
 		name         string
 		inputParam   string
-		inputBody    string
 		mockFuncs    []MockMethod
 		expectedCode int
 		expectedBody string
 	}{
-
 		{
 			name: "ok",
 
-			inputParam: "/1",
-			inputBody: `{
-				"limit":3
-			}`,
+			inputParam: "/1?limit=3",
+
 			mockFuncs: []MockMethod{
 				{
 					"Permission",
@@ -1278,7 +1261,7 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 					[]any{mock.Anything, 1, 3},
 					[]any{
 						[]models.Banner{
-							models.Banner{
+							{
 								ID:        1,
 								Feature:   1,
 								Tags:      []int32{1},
@@ -1297,7 +1280,7 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 		},
 		{
 			name:       "validation error",
-			inputParam: "/asd",
+			inputParam: "/asd?limit=3",
 			mockFuncs: []MockMethod{
 				{
 					"Permission",
@@ -1310,7 +1293,7 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 		},
 		{
 			name:       "validation error id",
-			inputParam: "/asd",
+			inputParam: "/asd?limit=3",
 
 			mockFuncs: []MockMethod{
 				{
@@ -1324,8 +1307,9 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 		},
 
 		{
-			inputParam: "/1",
-			name:       "not logged",
+			inputParam: "/1?limit=3",
+
+			name: "not logged",
 			mockFuncs: []MockMethod{
 				{
 					"Permission",
@@ -1338,7 +1322,7 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 		},
 		{
 			name:       "auth error",
-			inputParam: "/1",
+			inputParam: "/1?limit=3",
 
 			mockFuncs: []MockMethod{
 				{
@@ -1352,7 +1336,8 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 		},
 		{
 			name:       "wrong  role",
-			inputParam: "/1",
+			inputParam: "/1?limit=3",
+
 			mockFuncs: []MockMethod{
 				{
 					"Permission",
@@ -1366,10 +1351,8 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 
 		{
 			name:       "server error",
-			inputParam: "/1",
-			inputBody: `{
-				"limit":3
-			}`,
+			inputParam: "/1?limit=3",
+
 			mockFuncs: []MockMethod{
 				{
 					"Permission",
@@ -1379,17 +1362,18 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 				{
 					"GetBannerWithHistory",
 					[]any{mock.Anything, 1, 3},
-					[]any{[]models.Banner{
-						models.Banner{
-							ID:        1,
-							Feature:   1,
-							Tags:      []int32{1},
-							Content:   `"test":"1"`,
-							IsActive:  true,
-							UpdatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
-							CreatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
+					[]any{
+						[]models.Banner{
+							{
+								ID:        1,
+								Feature:   1,
+								Tags:      []int32{1},
+								Content:   `"test":"1"`,
+								IsActive:  true,
+								UpdatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
+								CreatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
+							},
 						},
-					},
 						errs.Unknown,
 					},
 				},
@@ -1398,11 +1382,9 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Unknown),
 		},
 		{
-			name: "no history",
-			inputBody: `{
-				"limit":3
-			}`,
-			inputParam: "/1",
+			name:       "no history",
+			inputParam: "/1?limit=3",
+
 			mockFuncs: []MockMethod{
 				{
 					"Permission",
@@ -1429,7 +1411,6 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 
 			srvc := mock_service.NewService(t)
 			for _, mockFunc := range test.mockFuncs {
-
 				srvc.On(mockFunc.methodName, mockFunc.args...).Once().Return(mockFunc.returns...)
 			}
 
@@ -1437,7 +1418,7 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 			w := httptest.NewRecorder()
 			mux := http.NewServeMux()
 			mux.HandleFunc("GET /banner_history/{id}", r.GetBannerWithHistory)
-			req := httptest.NewRequest("GET", "/banner_history"+test.inputParam, bytes.NewBufferString(test.inputBody))
+			req := httptest.NewRequest("GET", "/banner_history"+test.inputParam, nil)
 			mux.ServeHTTP(w, req)
 			assert.Equal(t, test.expectedCode, w.Code)
 			assert.Equal(t, test.expectedBody, strings.TrimSpace(w.Body.String()))

@@ -24,7 +24,9 @@ func (t transport) handleHTTPError(w http.ResponseWriter, err error, method stri
 
 	w.WriteHeader(status)
 
-	json.NewEncoder(w).Encode(response.Error{Error: err.Error()})
+	if err := json.NewEncoder(w).Encode(response.Error{Error: err.Error()}); err != nil {
+		t.l.Error(method, zap.Error(logError))
+	}
 	t.l.Error(method, zap.Error(logError))
 }
 
@@ -33,7 +35,9 @@ func (t transport) handleHTTPOk(w http.ResponseWriter, resp interface{}, method 
 	w.WriteHeader(status)
 
 	if resp != nil {
-		json.NewEncoder(w).Encode(resp)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			t.l.Error(method, zap.Error(err))
+		}
 	}
 	t.l.Info(method)
 }

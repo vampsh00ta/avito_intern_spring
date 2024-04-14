@@ -4,6 +4,7 @@ import (
 	"avito_intern/internal/models"
 	"context"
 	"fmt"
+	"sort"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -28,7 +29,6 @@ func (db Pg) CreateHistoryBanner(ctx context.Context, banner models.Banner) erro
 		Scan(&bannerHistoryID); err != nil {
 		return err
 	}
-	fmt.Println(banner)
 	if len(banner.Tags) > 0 {
 		if err := db.AddTagsToHistoryBanner(ctx, bannerHistoryID, banner.Feature, banner.Tags...); err != nil {
 			return err
@@ -89,7 +89,7 @@ func (db Pg) GetBannerWithHistory(ctx context.Context, bannerID, limit int) ([]m
 	}
 
 	mapping := make(map[int]*models.Banner)
-
+	keys := make([]int, 0)
 	for _, rowRes := range rowReses {
 		id := rowRes.BannerHistoryID
 		curr, ok := mapping[id]
@@ -103,6 +103,7 @@ func (db Pg) GetBannerWithHistory(ctx context.Context, bannerID, limit int) ([]m
 				UpdatedAt: rowRes.UpdatedAt,
 				Tags:      make([]int32, 0),
 			}
+			keys = append(keys, id)
 			mapping[id] = curr
 		}
 		if rowRes.Tag != nil {
@@ -113,10 +114,16 @@ func (db Pg) GetBannerWithHistory(ctx context.Context, bannerID, limit int) ([]m
 
 	res := make([]models.Banner, len(mapping))
 	i := 0
-	for _, value := range mapping {
-		res[i] = *value
+	sort.Slice(keys, func(i, j int) bool {
+		return keys[i] > keys[j]
+	})
+
+	for _, key := range keys {
+		value := *mapping[key]
+		res[i] = value
 		i++
 	}
+
 	return res, nil
 }
 

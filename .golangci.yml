@@ -9,7 +9,6 @@ linters:
     - contextcheck
     - durationcheck
     - errcheck
-    - errname
     - errorlint
     - exportloopref
     - godot
@@ -20,7 +19,6 @@ linters:
     - gosec
     - gosimple
     - govet
-    - ineffassign
     - interfacer
     - misspell
     - nakedret
@@ -32,7 +30,6 @@ linters:
     - predeclared
     - promlinter
     - reassign
-    - revive
     - rowserrcheck
     - sqlclosecheck
     - staticcheck
@@ -44,10 +41,12 @@ linters:
     - unconvert
     - unparam
     - unused
-    - usestdlibvars
-    - wastedassign
   disable:
+    - wastedassign
     - gocritic
+    - ineffassign
+    - errname
+    - usestdlibvars
     - containedctx
     - cyclop
     - deadcode
@@ -55,6 +54,7 @@ linters:
     - depguard
     - dogsled
     - dupl
+    - revive
     - dupword
     - errchkjson
     - execinquery

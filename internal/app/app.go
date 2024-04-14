@@ -50,8 +50,8 @@ func Run(cfg *config.Config) {
 
 	logger.Info("Listening...")
 
-	if err := http.ListenAndServe(":"+cfg.HTTP.Port, t); err != nil {
-		logger.Fatal("listening error", zap.Error(err))
+	if err := http.ListenAndServe(":"+cfg.HTTP.Port, t); err != nil { //nolint:gosec
+		logger.Fatal(err.Error())
 	}
 	select {
 	case <-interrupt:

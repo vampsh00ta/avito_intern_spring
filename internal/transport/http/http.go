@@ -5,12 +5,10 @@ import (
 	"avito_intern/internal/service"
 	"net/http"
 
-
-	httpSwagger "github.com/swaggo/http-swagger"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 	"github.com/rs/cors"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 	// swaggerFiles "github.com/swaggo/files".
 )

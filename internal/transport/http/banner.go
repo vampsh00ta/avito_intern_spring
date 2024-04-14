@@ -57,7 +57,6 @@ func (t transport) GetBannerForUser(w http.ResponseWriter, r *http.Request) {
 		t.handleHTTPError(w, errs.NoRowsInResult, methodName, http.StatusInternalServerError)
 		return
 	}
-	// fmt.Println(userBanner.IsActive)
 
 	t.handleHTTPOk(w, response.GetBannerForUser{Content: userBanner.Content}, methodName, http.StatusOK)
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+//nolint:stylecheck
 var (
 	IncorrectJSON  = errors.New("incorrect json")
 	Duplicate      = errors.New("some of input data already exists")
@@ -39,8 +40,7 @@ func Handle(err error) error {
 		return Auth
 
 	}
-
-	if pgErr, ok := err.(*pgconn.PgError); ok {
+	if pgErr, ok := err.(*pgconn.PgError); ok { //nolint:errorlint
 		switch pgErr.Code {
 		case "23505":
 			return Duplicate
@@ -50,10 +50,11 @@ func Handle(err error) error {
 			return Unknown
 		}
 	}
-	if _, ok := err.(validator.ValidationErrors); ok {
+
+	if _, ok := err.(validator.ValidationErrors); ok { //nolint:errorlint
 		return Validation
 	}
-	if _, ok := err.(redis.Error); ok {
+	if _, ok := err.(redis.Error); ok { //nolint:errorlint
 		return Unknown
 	}
 

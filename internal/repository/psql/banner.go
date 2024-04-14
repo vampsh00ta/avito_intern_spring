@@ -213,7 +213,6 @@ func (db Pg) ChangeBannerTagsOrFeature(ctx context.Context, ID int, featureID *i
 		}
 	} else if tagIDs != nil && len(*tagIDs) == 0 {
 		var res int32
-		fmt.Println("asd")
 		q := `delete from banner_tag where banner_id = $1 returning feature_id`
 
 		if err := client.QueryRow(ctx, q, ID).Scan(&res); err != nil {
