@@ -6,7 +6,6 @@ import (
 	"avito_intern/internal/transport/http/request"
 	"avito_intern/internal/transport/http/response"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -250,9 +249,9 @@ func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
 // @Summary     DeleteBannerByTagAndFeature
 // @Description Удаление банера по  тэгу и фиче
 // @Tags        Banner
-// @Accept      json
 // @Produce     json
-// @Param data body request.DeleteBannerByTagAndFeature true "Модель запроса"
+// @Param tag_id query int true "Идентификатор тега"
+// @Param feature_id query int true "Идентификатор фичи"
 // @Success     204 {object} response.DeleteBannerByTagAndFeature "Deleted"
 // @Failure     400 {object} response.Error "Некорректные данные"
 // @Failure     401 {object} response.Error "Пользователь не авторизован"
@@ -270,12 +269,12 @@ func (t transport) DeleteBannerByTagAndFeature(w http.ResponseWriter, r *http.Re
 	}
 
 	var req request.DeleteBannerByTagAndFeature
-
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := decoder.Decode(&req, r.URL.Query()); err != nil {
 		t.handleHTTPError(w, errs.ValidationError, methodName, http.StatusBadRequest)
 
 		return
 	}
+
 	if err := validate.Struct(req); err != nil {
 		t.handleHTTPError(w, errs.ValidationError, methodName, http.StatusBadRequest)
 		return
@@ -295,6 +294,7 @@ func (t transport) DeleteBannerByTagAndFeature(w http.ResponseWriter, r *http.Re
 // @Accept      json
 // @Produce     json
 // @Param        id   path      int  true  "Идентификатор баннера"
+// @Param 		limit query int false "Лимит (до 3 )"
 // @Success     200 {object} response.GetBannerHistory "История"
 // @Failure     400 {object} response.Error Некорректные данные
 // @Failure     401 {object} response.Error Пользователь не авторизован
@@ -302,7 +302,7 @@ func (t transport) DeleteBannerByTagAndFeature(w http.ResponseWriter, r *http.Re
 // @Failure     404 {object} response.Error История  не найдена
 // @Failure     500 {object} response.Error Внутренняя ошибка сервера
 // @Security ApiKeyAuth
-// @Router      /banner_history [get]
+// @Router      /banner_history/{id} [get]
 func (t transport) GetBannerWithHistory(w http.ResponseWriter, r *http.Request) {
 	methodName := "GetBannerWithHistory"
 
@@ -317,13 +317,12 @@ func (t transport) GetBannerWithHistory(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	var req request.GetBannerHistory
-
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := decoder.Decode(&req, r.URL.Query()); err != nil {
 		t.handleHTTPError(w, errs.ValidationError, methodName, http.StatusBadRequest)
 
 		return
 	}
-	fmt.Println(req)
+
 	banners, err := t.s.GetBannerWithHistory(r.Context(), ID, req.Limit)
 	if err != nil {
 		t.handleHTTPError(w, err, methodName, http.StatusInternalServerError)
