@@ -36,6 +36,7 @@ http://localhost:8000/swagger/index.html#/
 
 
 # Примеры запросов
+## Ниже приведены дублированние запросы из Swagger.
 ## Токен admin или user можно  получить по юрлу /login   с телом {"username":"admin"} или {"username":"notadmin"} соотвественно. Токен лежит в хедере в Authorization в виде "Bearer  eto_access_token". Чтобы делать запросы в Swagger, нужно добавить его в Authorize
 ![docs/img.png](docs/img.png)
 
