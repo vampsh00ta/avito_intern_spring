@@ -20,7 +20,7 @@ type DeleteBannerByID struct {
 }
 
 type CreateBanner struct {
-	Tags     []int32 `json:"tag_ids" validate:"required" `
+	Tags     []int32 `json:"tag_ids" validate:"required,gt=0,dive,required" `
 	Feature  int32   `json:"feature_id"  validate:"required"`
 	Content  string  `json:"content"  validate:"required"`
 	IsActive bool    `json:"is_active" validate:"required" `

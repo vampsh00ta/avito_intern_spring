@@ -593,6 +593,25 @@ func TestBanner_CreateBanner(t *testing.T) {
 			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.IncorrectJSON),
 		},
 		{
+			name: "nil tag id error ",
+			inputBody: `{
+						"tag_ids":[],
+						"feature_id":1,
+						"content":"{}",
+						"is_active":true
+						}`,
+
+			mockFuncs: []MockMethod{
+				{
+					"Permission",
+					[]any{mock.Anything, mock.Anything, models.Admin},
+					[]any{true, nil},
+				},
+			},
+			expectedCode: 400,
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Validation),
+		},
+		{
 			name: "not logged",
 			inputBody: `{
 						"tag_ids":[1],
