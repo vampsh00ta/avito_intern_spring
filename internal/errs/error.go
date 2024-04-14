@@ -1,6 +1,7 @@
 package errs
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
@@ -54,10 +55,16 @@ func Handle(err error) error {
 	if _, ok := err.(validator.ValidationErrors); ok { //nolint:errorlint
 		return Validation
 	}
+	var jsErr *json.InvalidUnmarshalError
+	if errors.As(err, &jsErr) { //nolint:errorlint
+		return Validation
+	}
 	if _, ok := err.(schema.EmptyFieldError); ok { //nolint:errorlint
 		return Validation
 	}
-
+	if _, ok := err.(schema.MultiError); ok { //nolint:errorlint
+		return Validation
+	}
 	if _, ok := err.(redis.Error); ok { //nolint:errorlint
 		return Unknown
 	}

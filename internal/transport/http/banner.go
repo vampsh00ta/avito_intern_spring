@@ -219,7 +219,7 @@ func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
 	}
 	var req request.ChangeBanner
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
 
 		return
 	}
@@ -269,13 +269,13 @@ func (t transport) DeleteBannerByTagAndFeature(w http.ResponseWriter, r *http.Re
 
 	var req request.DeleteBannerByTagAndFeature
 	if err := decoder.Decode(&req, r.URL.Query()); err != nil {
-		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
 
 		return
 	}
 
 	if err := validate.Struct(req); err != nil {
-		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
 		return
 	}
 
@@ -317,7 +317,7 @@ func (t transport) GetBannerWithHistory(w http.ResponseWriter, r *http.Request) 
 	}
 	var req request.GetBannerHistory
 	if err := decoder.Decode(&req, r.URL.Query()); err != nil {
-		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
 
 		return
 	}
