@@ -17,10 +17,9 @@ func (t transport) handleHTTPError(w http.ResponseWriter, err error, method stri
 
 	logError := err
 	err = errs.Handle(err)
-	if errors.Is(err, errs.NoRowsInResultErr) ||
-		errors.Is(err, errs.NoReferenceErr) {
+	if errors.Is(err, errs.NoRowsInResult) ||
+		errors.Is(err, errs.NoReference) {
 		status = http.StatusNotFound
-
 	}
 
 	w.WriteHeader(status)
@@ -47,12 +46,12 @@ func IsJSON(str string) bool {
 func getIDFromURL(r *http.Request) (int, error) {
 	strID := r.PathValue("id")
 	if strID == "" {
-		return -1, errs.NilIDErr
+		return -1, errs.NilID
 	}
 	fmt.Println(strID)
 	ID, err := strconv.Atoi(strID)
 	if err != nil {
-		return -1, errs.WrongIDErr
+		return -1, errs.WrongID
 	}
 	return ID, nil
 }
@@ -87,7 +86,7 @@ func (t transport) permission(_ http.ResponseWriter, r *http.Request, groupIDs .
 		return http.StatusUnauthorized, err
 	}
 	if !ok {
-		return http.StatusForbidden, errs.WrongRoleErr
+		return http.StatusForbidden, errs.WrongRole
 	}
 
 	return http.StatusAccepted, nil

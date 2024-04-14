@@ -3,8 +3,10 @@ package http
 import (
 	_ "avito_intern/docs"
 	"avito_intern/internal/service"
-	httpSwagger "github.com/swaggo/http-swagger"
 	"net/http"
+
+
+	httpSwagger "github.com/swaggo/http-swagger"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
@@ -27,8 +29,8 @@ func NewTest(t service.Service, l *zap.SugaredLogger) *transport {
 	r := &transport{t, l}
 
 	return r
-
 }
+
 func New(t service.Service, l *zap.SugaredLogger) http.Handler {
 	r := &transport{t, l}
 	mux := http.NewServeMux()
@@ -45,7 +47,7 @@ func New(t service.Service, l *zap.SugaredLogger) http.Handler {
 	mux.HandleFunc("POST /login", r.Login)
 
 	mux.HandleFunc("GET /swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:8000/swagger/doc.json"), //The url pointing to API definition
+		httpSwagger.URL("http://localhost:8000/swagger/doc.json"), // The url pointing to API definition
 	))
 
 	c := cors.New(cors.Options{

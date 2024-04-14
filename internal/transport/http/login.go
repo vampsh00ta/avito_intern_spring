@@ -20,7 +20,7 @@ import (
 // @Failure     404 {object} response.Error Пользователь не найден
 // @Failure     500 {object} response.Error Внутренняя ошибка сервера
 // @Security ApiKeyAuth
-// @Router      /login [post]
+// @Router      /login [post].
 func (t transport) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

@@ -2,6 +2,7 @@ package errs
 
 import (
 	"errors"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/redis/go-redis/v9"
@@ -11,49 +12,49 @@ import (
 )
 
 var (
-	IncorrectJSONErr  = errors.New("incorrect json")
-	DublicateErr      = errors.New("some of input data already exists")
-	NilIDErr          = errors.New("nil ID")
-	WrongIDErr        = errors.New("wrong id")
-	IncorrectTokenErr = errors.New("incorrect token")
-	AuthErr           = errors.New("auth error")
-	InvalidTokenErr   = errors.New("invalid token")
-	NoReferenceErr    = errors.New("no such tag/feature")
-	UnknownErr        = errors.New("unknown error")
-	ValidationError   = errors.New("incorrect input data")
+	IncorrectJSON  = errors.New("incorrect json")
+	Duplicate      = errors.New("some of input data already exists")
+	NilID          = errors.New("nil ID")
+	WrongID        = errors.New("wrong id")
+	IncorrectToken = errors.New("incorrect token")
+	Auth           = errors.New("auth error")
+	InvalidToken   = errors.New("invalid token")
+	NoReference    = errors.New("no such tag/feature")
+	Unknown        = errors.New("unknown error")
+	Validation     = errors.New("incorrect input data")
 
-	NotAdminErr       = errors.New("you are not admin")
-	NoUserSuchUserErr = errors.New("no such user")
-	NotLoggedErr      = errors.New("you are not logged")
-	WrongRoleErr      = errors.New("wrong role")
-	NoRowsInResultErr = errors.New("no such data")
+	NotAdminErr    = errors.New("you are not admin")
+	NoUserSuchUser = errors.New("no such user")
+	NotLogged      = errors.New("you are not logged")
+	WrongRole      = errors.New("wrong role")
+	NoRowsInResult = errors.New("no such data")
 )
 
 func Handle(err error) error {
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
-		return NoRowsInResultErr
+		return NoRowsInResult
 
 	case errors.Is(err, jwt.ErrSignatureInvalid), errors.Is(err, jwt.ErrTokenMalformed):
-		return AuthErr
+		return Auth
 
 	}
 
 	if pgErr, ok := err.(*pgconn.PgError); ok {
 		switch pgErr.Code {
 		case "23505":
-			return DublicateErr
+			return Duplicate
 		case "23503":
-			return NoReferenceErr
+			return NoReference
 		default:
-			return UnknownErr
+			return Unknown
 		}
 	}
 	if _, ok := err.(validator.ValidationErrors); ok {
-		return ValidationError
+		return Validation
 	}
 	if _, ok := err.(redis.Error); ok {
-		return UnknownErr
+		return Unknown
 	}
 
 	return err

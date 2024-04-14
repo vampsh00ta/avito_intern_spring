@@ -101,7 +101,6 @@ func (db Pg) GetBannerByID(ctx context.Context, ID int) (models.Banner, error) {
 		res.CreatedAt = bannerTag.CreatedAt
 		if bannerTag.Tag != nil {
 			res.Tags = append(res.Tags, *bannerTag.Tag)
-
 		}
 
 	}
@@ -121,7 +120,6 @@ func (db Pg) GetBanners(ctx context.Context, tagID, featureID, limit, offset int
 	q, args := complex_queries.GetBanners(tagID, featureID, limit, offset)
 	rows, err := client.Query(ctx, q, args...)
 	if err != nil {
-
 		return nil, err
 	}
 	rowReses, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.BannerTags])
@@ -151,7 +149,6 @@ func (db Pg) GetBanners(ctx context.Context, tagID, featureID, limit, offset int
 		}
 		if rowRes.Tag != nil {
 			curr.Tags = append(curr.Tags, *rowRes.Tag)
-
 		}
 	}
 
@@ -193,7 +190,6 @@ func (db Pg) ChangeBannerTagsOrFeature(ctx context.Context, ID int, featureID *i
 		argsTags := []int32{}
 		if tagIDs != nil {
 			argsTags = append(argsTags, *tagIDs...)
-
 		}
 		var res int32
 

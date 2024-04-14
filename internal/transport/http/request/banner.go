@@ -33,6 +33,6 @@ type ChangeBanner struct {
 	IsActive *bool    `json:"is_active"  `
 }
 type DeleteBannerByTagAndFeature struct {
-	TagID     int32 `json:"tag_id" validate:"required"schema:"tag_id" `
+	TagID     int32 `json:"tag_id" validate:"required" schema:"tag_id" `
 	FeatureID int32 `json:"feature_id"  validate:"required" schema:"feature_id"`
 }

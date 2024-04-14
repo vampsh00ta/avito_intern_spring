@@ -39,7 +39,7 @@ func (s service) Login(ctx context.Context, username string) (string, error) {
 		return "", err
 	}
 	if user.ID == 0 {
-		return "", errs.NoUserSuchUserErr
+		return "", errs.NoUserSuchUser
 	}
 	jwtToken, err := s.CreateAccessToken(user, 24*30)
 	if err != nil {

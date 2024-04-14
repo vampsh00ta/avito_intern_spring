@@ -97,7 +97,7 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 				},
 			},
 			expectedCode: 404,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoRowsInResultErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoRowsInResult),
 		},
 		{
 			name:        "nil feature_id",
@@ -110,7 +110,7 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 				},
 			},
 			expectedCode: 400,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.ValidationError),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Validation),
 		},
 		{
 			name:        "nil tag_id",
@@ -123,7 +123,7 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 				},
 			},
 			expectedCode: 400,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.ValidationError),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Validation),
 		},
 		{
 			name:        "not logged",
@@ -132,11 +132,11 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.OrdinaryUser, models.Admin},
-					[]any{false, errs.NotLoggedErr},
+					[]any{false, errs.NotLogged},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLoggedErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged),
 		},
 		{
 			name:        "auth error",
@@ -145,11 +145,11 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.OrdinaryUser, models.Admin},
-					[]any{false, errs.AuthErr},
+					[]any{false, errs.Auth},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.AuthErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Auth),
 		},
 		{
 			name:        "auth error",
@@ -164,12 +164,12 @@ func TestBanner_GetBannerForUser(t *testing.T) {
 					"GetBannerForUser",
 					[]any{mock.Anything, int32(1), int32(1), false},
 					[]any{models.Banner{},
-						errs.UnknownErr,
+						errs.Unknown,
 					},
 				},
 			},
 			expectedCode: 500,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.UnknownErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Unknown),
 		},
 	}
 	for _, test := range tests {
@@ -275,11 +275,11 @@ func TestBanner_GetBanners(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.Admin},
-					[]any{true, errs.NotLoggedErr},
+					[]any{true, errs.NotLogged},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLoggedErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged),
 			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
@@ -289,11 +289,11 @@ func TestBanner_GetBanners(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.Admin},
-					[]any{true, errs.AuthErr},
+					[]any{true, errs.Auth},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.AuthErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Auth),
 		},
 		{
 			name:        "wrong  role",
@@ -306,7 +306,7 @@ func TestBanner_GetBanners(t *testing.T) {
 				},
 			},
 			expectedCode: 403,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRoleErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRole),
 			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
@@ -328,7 +328,7 @@ func TestBanner_GetBanners(t *testing.T) {
 				},
 			},
 			expectedCode: 404,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoRowsInResultErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoRowsInResult),
 		},
 		{
 			name:        "server error ",
@@ -344,12 +344,12 @@ func TestBanner_GetBanners(t *testing.T) {
 					[]any{mock.Anything, int32(0), int32(0), int32(0), int32(0)},
 					[]any{[]models.Banner{},
 
-						errs.UnknownErr,
+						errs.Unknown,
 					},
 				},
 			},
 			expectedCode: 500,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.UnknownErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Unknown),
 		},
 	}
 	for _, test := range tests {
@@ -412,11 +412,11 @@ func TestBanner_DeleteBannerByID(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.Admin},
-					[]any{true, errs.NotLoggedErr},
+					[]any{true, errs.NotLogged},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLoggedErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged),
 			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
@@ -426,11 +426,11 @@ func TestBanner_DeleteBannerByID(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.Admin},
-					[]any{true, errs.AuthErr},
+					[]any{true, errs.Auth},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.AuthErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Auth),
 			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
@@ -444,7 +444,7 @@ func TestBanner_DeleteBannerByID(t *testing.T) {
 				},
 			},
 			expectedCode: 403,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRoleErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRole),
 			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
@@ -465,7 +465,7 @@ func TestBanner_DeleteBannerByID(t *testing.T) {
 				},
 			},
 			expectedCode: 404,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoRowsInResultErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoRowsInResult),
 		},
 		{
 			name:        "server error",
@@ -481,12 +481,12 @@ func TestBanner_DeleteBannerByID(t *testing.T) {
 					[]any{mock.Anything, 1},
 					[]any{
 
-						errs.UnknownErr,
+						errs.Unknown,
 					},
 				},
 			},
 			expectedCode: 500,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.UnknownErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Unknown),
 		},
 	}
 	for _, test := range tests {
@@ -568,7 +568,7 @@ func TestBanner_CreateBanner(t *testing.T) {
 				},
 			},
 			expectedCode: 400,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.ValidationError),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Validation),
 		},
 		{
 			name: "validation error json",
@@ -587,7 +587,7 @@ func TestBanner_CreateBanner(t *testing.T) {
 				},
 			},
 			expectedCode: 400,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.IncorrectJSONErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.IncorrectJSON),
 		},
 		{
 			name: "not logged",
@@ -601,11 +601,11 @@ func TestBanner_CreateBanner(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.Admin},
-					[]any{false, errs.NotLoggedErr},
+					[]any{false, errs.NotLogged},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLoggedErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged),
 			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
@@ -620,11 +620,11 @@ func TestBanner_CreateBanner(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.Admin},
-					[]any{true, errs.AuthErr},
+					[]any{true, errs.Auth},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.AuthErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Auth),
 		},
 		{
 			name: "wrong  role",
@@ -642,7 +642,7 @@ func TestBanner_CreateBanner(t *testing.T) {
 				},
 			},
 			expectedCode: 403,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRoleErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRole),
 		},
 
 		{
@@ -669,12 +669,12 @@ func TestBanner_CreateBanner(t *testing.T) {
 					}},
 					[]any{
 						-1,
-						errs.UnknownErr,
+						errs.Unknown,
 					},
 				},
 			},
 			expectedCode: 500,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.UnknownErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Unknown),
 		},
 		{
 			name: "no such tag/feature",
@@ -700,12 +700,12 @@ func TestBanner_CreateBanner(t *testing.T) {
 					}},
 					[]any{
 						-1,
-						errs.NoReferenceErr,
+						errs.NoReference,
 					},
 				},
 			},
 			expectedCode: 404,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoReferenceErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoReference),
 		},
 		{
 			name: "already exist",
@@ -731,12 +731,12 @@ func TestBanner_CreateBanner(t *testing.T) {
 					}},
 					[]any{
 						-1,
-						errs.DublicateErr,
+						errs.Duplicate,
 					},
 				},
 			},
 			expectedCode: 500,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.DublicateErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Duplicate),
 		},
 	}
 	for _, test := range tests {
@@ -831,7 +831,7 @@ func TestBanner_ChangeBanner(t *testing.T) {
 				},
 			},
 			expectedCode: 400,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.ValidationError),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Validation),
 		},
 		{
 			name: "validation error id",
@@ -851,7 +851,7 @@ func TestBanner_ChangeBanner(t *testing.T) {
 				},
 			},
 			expectedCode: 400,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongIDErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongID),
 		},
 		{
 			name: "validation error json",
@@ -871,7 +871,7 @@ func TestBanner_ChangeBanner(t *testing.T) {
 				},
 			},
 			expectedCode: 400,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.IncorrectJSONErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.IncorrectJSON),
 		},
 
 		{
@@ -887,11 +887,11 @@ func TestBanner_ChangeBanner(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.Admin},
-					[]any{false, errs.NotLoggedErr},
+					[]any{false, errs.NotLogged},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLoggedErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged),
 			//expectedBody: "{\"content\":\"{\\\"title\\\": \\\"some_title\\\", \\\"text\\\": \\\"some_text\\\", \\\"url\\\": \\\"some_url\\\"}\"}",
 		},
 		{
@@ -907,11 +907,11 @@ func TestBanner_ChangeBanner(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.Admin},
-					[]any{false, errs.AuthErr},
+					[]any{false, errs.Auth},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.AuthErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Auth),
 		},
 		{
 			name: "wrong  role",
@@ -930,7 +930,7 @@ func TestBanner_ChangeBanner(t *testing.T) {
 				},
 			},
 			expectedCode: 403,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRoleErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRole),
 		},
 
 		{
@@ -958,12 +958,12 @@ func TestBanner_ChangeBanner(t *testing.T) {
 							IsActive: true,
 						})},
 					[]any{
-						errs.UnknownErr,
+						errs.Unknown,
 					},
 				},
 			},
 			expectedCode: 500,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.UnknownErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Unknown),
 		},
 		{
 			name:       "no such tag/feature",
@@ -991,12 +991,12 @@ func TestBanner_ChangeBanner(t *testing.T) {
 							IsActive: true,
 						})},
 					[]any{
-						errs.NoReferenceErr,
+						errs.NoReference,
 					},
 				},
 			},
 			expectedCode: 404,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoReferenceErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoReference),
 		},
 		{
 			name: "already exist",
@@ -1022,12 +1022,12 @@ func TestBanner_ChangeBanner(t *testing.T) {
 						IsActive: true,
 					})},
 					[]any{
-						errs.DublicateErr,
+						errs.Duplicate,
 					},
 				},
 			},
 			expectedCode: 500,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.DublicateErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Duplicate),
 		},
 	}
 	for _, test := range tests {
@@ -1101,7 +1101,7 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 				},
 			},
 			expectedCode: 400,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.ValidationError),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Validation),
 		},
 
 		{
@@ -1115,11 +1115,11 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.Admin},
-					[]any{false, errs.NotLoggedErr},
+					[]any{false, errs.NotLogged},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLoggedErr)},
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged)},
 		{
 			name: "auth error",
 			inputBody: `{
@@ -1130,11 +1130,11 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.Admin},
-					[]any{false, errs.AuthErr},
+					[]any{false, errs.Auth},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.AuthErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Auth),
 		},
 		{
 			name: "wrong  role",
@@ -1151,7 +1151,7 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 				},
 			},
 			expectedCode: 403,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRoleErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRole),
 		},
 
 		{
@@ -1170,12 +1170,12 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 					"DeleteBannerByTagAndFeature",
 					[]any{mock.Anything, int32(1), int32(1)},
 					[]any{-1,
-						errs.UnknownErr,
+						errs.Unknown,
 					},
 				},
 			},
 			expectedCode: 500,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.UnknownErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Unknown),
 		},
 		{
 			name: "no such tag/feature",
@@ -1195,12 +1195,12 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 					[]any{mock.Anything, int32(1), int32(1)},
 					[]any{
 						-1,
-						errs.NoRowsInResultErr,
+						errs.NoRowsInResult,
 					},
 				},
 			},
 			expectedCode: 404,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoRowsInResultErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoRowsInResult),
 		},
 		{
 			name: "unknown error",
@@ -1220,12 +1220,12 @@ func TestBanner_DeleteBannerByTagAndFeature(t *testing.T) {
 					[]any{mock.Anything, int32(1), int32(1)},
 					[]any{
 						-1,
-						errs.UnknownErr,
+						errs.Unknown,
 					},
 				},
 			},
 			expectedCode: 500,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.UnknownErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Unknown),
 		},
 	}
 	for _, test := range tests {
@@ -1306,7 +1306,7 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 				},
 			},
 			expectedCode: 400,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongIDErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongID),
 		},
 		{
 			name:       "validation error id",
@@ -1320,7 +1320,7 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 				},
 			},
 			expectedCode: 400,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongIDErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongID),
 		},
 
 		{
@@ -1330,11 +1330,11 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.Admin},
-					[]any{false, errs.NotLoggedErr},
+					[]any{false, errs.NotLogged},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLoggedErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NotLogged),
 		},
 		{
 			name:       "auth error",
@@ -1344,11 +1344,11 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 				{
 					"Permission",
 					[]any{mock.Anything, mock.Anything, models.Admin},
-					[]any{false, errs.AuthErr},
+					[]any{false, errs.Auth},
 				},
 			},
 			expectedCode: 401,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.AuthErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Auth),
 		},
 		{
 			name:       "wrong  role",
@@ -1361,7 +1361,7 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 				},
 			},
 			expectedCode: 403,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRoleErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.WrongRole),
 		},
 
 		{
@@ -1390,12 +1390,12 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 							CreatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC),
 						},
 					},
-						errs.UnknownErr,
+						errs.Unknown,
 					},
 				},
 			},
 			expectedCode: 500,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.UnknownErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.Unknown),
 		},
 		{
 			name: "no history",
@@ -1414,12 +1414,12 @@ func TestBanner_GetBannerWithHistory(t *testing.T) {
 					[]any{mock.Anything, 1, 3},
 					[]any{
 						[]models.Banner{},
-						errs.NoRowsInResultErr,
+						errs.NoRowsInResult,
 					},
 				},
 			},
 			expectedCode: 404,
-			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoRowsInResultErr),
+			expectedBody: fmt.Sprintf(`{"error":"%s"}`, errs.NoRowsInResult),
 		},
 	}
 	for _, test := range tests {

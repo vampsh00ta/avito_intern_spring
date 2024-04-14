@@ -24,7 +24,7 @@ import (
 // @Failure     404 {object} response.Error Баннер не найден
 // @Failure     500 {object} response.Error Внутренняя ошибка сервера
 // @Security ApiKeyAuth
-// @Router      /user_banner [get]
+// @Router      /user_banner [get].
 func (t transport) GetBannerForUser(w http.ResponseWriter, r *http.Request) {
 	methodName := "GetBannerForUser"
 
@@ -35,13 +35,13 @@ func (t transport) GetBannerForUser(w http.ResponseWriter, r *http.Request) {
 	var req request.GetBannerForUser
 
 	if err := decoder.Decode(&req, r.URL.Query()); err != nil {
-		t.handleHTTPError(w, errs.ValidationError, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
 
 		return
 	}
 
 	if err := validate.Struct(req); err != nil {
-		t.handleHTTPError(w, errs.ValidationError, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
 
 		return
 	}
@@ -54,10 +54,10 @@ func (t transport) GetBannerForUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !userBanner.IsActive {
-		t.handleHTTPError(w, errs.NoRowsInResultErr, methodName, http.StatusInternalServerError)
+		t.handleHTTPError(w, errs.NoRowsInResult, methodName, http.StatusInternalServerError)
 		return
 	}
-	//fmt.Println(userBanner.IsActive)
+	// fmt.Println(userBanner.IsActive)
 
 	t.handleHTTPOk(w, response.GetBannerForUser{Content: userBanner.Content}, methodName, http.StatusOK)
 }
@@ -78,7 +78,7 @@ func (t transport) GetBannerForUser(w http.ResponseWriter, r *http.Request) {
 // @Failure     404 {object} response.Error Баннеры не найдены
 // @Failure     500 {object} response.Error Внутренняя ошибка сервера
 // @Security ApiKeyAuth
-// @Router      /banner [get]
+// @Router      /banner [get].
 func (t transport) GetBanners(w http.ResponseWriter, r *http.Request) {
 	methodName := "GetBanners"
 
@@ -90,7 +90,7 @@ func (t transport) GetBanners(w http.ResponseWriter, r *http.Request) {
 	var req request.GetBanners
 
 	if err := decoder.Decode(&req, r.URL.Query()); err != nil {
-		t.handleHTTPError(w, errs.ValidationError, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
 
 		return
 	}
@@ -116,7 +116,7 @@ func (t transport) GetBanners(w http.ResponseWriter, r *http.Request) {
 // @Failure     404  {object} response.Error "Баннер не найден"
 // @Failure     500  {object} response.Error "Внутренняя ошибка сервера"
 // @Security ApiKeyAuth
-// @Router      /banner/{id} [delete]
+// @Router      /banner/{id} [delete].
 func (t transport) DeleteBannerByID(w http.ResponseWriter, r *http.Request) {
 	methodName := "DeleteBannerByID"
 
@@ -151,7 +151,7 @@ func (t transport) DeleteBannerByID(w http.ResponseWriter, r *http.Request) {
 // @Failure     404 {object} response.Error Баннер для тэга не найден
 // @Failure     500 {object} response.Error Внутренняя ошибка сервера
 // @Security ApiKeyAuth
-// @Router      /banner [post]
+// @Router      /banner [post].
 func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 	methodName := "CreateBanner"
 
@@ -163,16 +163,16 @@ func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 	var req request.CreateBanner
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		t.handleHTTPError(w, errs.ValidationError, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
 
 		return
 	}
 	if err := validate.Struct(req); err != nil {
-		t.handleHTTPError(w, errs.ValidationError, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
 		return
 	}
 	if ok := json.Valid([]byte(req.Content)); !ok {
-		t.handleHTTPError(w, errs.IncorrectJSONErr, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, errs.IncorrectJSON, methodName, http.StatusBadRequest)
 		return
 	}
 	banner := models.Banner{
@@ -204,7 +204,7 @@ func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 // @Failure     404 {object} response.Error Баннер не найден
 // @Failure     500 {object} response.Error Внутренняя ошибка сервера
 // @Security ApiKeyAuth
-// @Router      /banner/{id} [patch]
+// @Router      /banner/{id} [patch].
 func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
 	methodName := "ChangeBanner"
 
@@ -220,14 +220,14 @@ func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
 	}
 	var req request.ChangeBanner
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		t.handleHTTPError(w, errs.ValidationError, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
 
 		return
 	}
 
 	if req.Content != nil {
 		if ok := IsJSON(*req.Content); !ok {
-			t.handleHTTPError(w, errs.IncorrectJSONErr, methodName, http.StatusBadRequest)
+			t.handleHTTPError(w, errs.IncorrectJSON, methodName, http.StatusBadRequest)
 			return
 		}
 	}
@@ -259,7 +259,7 @@ func (t transport) ChangeBanner(w http.ResponseWriter, r *http.Request) {
 // @Failure     404 {object} response.Error "Баннер не найден"
 // @Failure     500 {object} response.Error "Внутренняя ошибка сервера"
 // @Security ApiKeyAuth
-// @Router      /banner [delete]
+// @Router      /banner [delete].
 func (t transport) DeleteBannerByTagAndFeature(w http.ResponseWriter, r *http.Request) {
 	methodName := "DeleteBannerByTagAndFeature"
 
@@ -270,13 +270,13 @@ func (t transport) DeleteBannerByTagAndFeature(w http.ResponseWriter, r *http.Re
 
 	var req request.DeleteBannerByTagAndFeature
 	if err := decoder.Decode(&req, r.URL.Query()); err != nil {
-		t.handleHTTPError(w, errs.ValidationError, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
 
 		return
 	}
 
 	if err := validate.Struct(req); err != nil {
-		t.handleHTTPError(w, errs.ValidationError, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
 		return
 	}
 
@@ -302,7 +302,7 @@ func (t transport) DeleteBannerByTagAndFeature(w http.ResponseWriter, r *http.Re
 // @Failure     404 {object} response.Error История  не найдена
 // @Failure     500 {object} response.Error Внутренняя ошибка сервера
 // @Security ApiKeyAuth
-// @Router      /banner_history/{id} [get]
+// @Router      /banner_history/{id} [get].
 func (t transport) GetBannerWithHistory(w http.ResponseWriter, r *http.Request) {
 	methodName := "GetBannerWithHistory"
 
@@ -318,7 +318,7 @@ func (t transport) GetBannerWithHistory(w http.ResponseWriter, r *http.Request) 
 	}
 	var req request.GetBannerHistory
 	if err := decoder.Decode(&req, r.URL.Query()); err != nil {
-		t.handleHTTPError(w, errs.ValidationError, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
 
 		return
 	}

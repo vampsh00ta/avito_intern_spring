@@ -2,11 +2,12 @@ package service
 
 import (
 	"avito_intern/config"
-	"go.uber.org/zap"
 
-	//"avito_intern/config".
 	psqlrepo "avito_intern/internal/repository/psql"
 	redisrepo "avito_intern/internal/repository/redis"
+
+	"go.uber.org/zap"
+	//"avito_intern/config".
 )
 
 type Service interface {
@@ -24,7 +25,8 @@ type service struct {
 func New(psqlrepo psqlrepo.Repository,
 	redisrepo redisrepo.Repository,
 	cfg *config.Config,
-	logger *zap.SugaredLogger) Service {
+	logger *zap.SugaredLogger,
+) Service {
 	srvc := &service{
 		psqlrepo,
 		redisrepo,
@@ -38,7 +40,7 @@ func New(psqlrepo psqlrepo.Repository,
 	go func(serviceErrorer <-chan error) {
 		for err := range serviceErrorer {
 			srvc.logger.Error(err)
-			//fmt.Println(err)
+			// fmt.Println(err)
 		}
 	}(serviceErrorer)
 	return srvc
