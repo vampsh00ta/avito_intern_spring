@@ -29,15 +29,16 @@ func (s service) ChangeBanner(ctx context.Context, ID int, banner models.BannerC
 	}()
 	currBanner, err := s.db.GetBannerByID(ctx, ID)
 	if err != nil {
-		s.db.Rollback(ctx)
-		return err
-	}
-	if err := s.db.ChangeBanner(ctx, ID, banner); err != nil {
-		s.db.Rollback(ctx)
+		_ = s.db.Rollback(ctx)
 		return err
 	}
 	if err := s.db.CreateHistoryBanner(ctx, currBanner); err != nil {
-		s.db.Rollback(ctx)
+		_ = s.db.Rollback(ctx)
+		return err
+	}
+
+	if err := s.db.ChangeBanner(ctx, ID, banner); err != nil {
+		_ = s.db.Rollback(ctx)
 		return err
 	}
 
@@ -97,7 +98,7 @@ func (s service) CreateBanner(ctx context.Context, banner models.Banner) (int, e
 	}()
 	res, err := s.db.CreateBanner(ctx, banner)
 	if err != nil {
-		s.db.Rollback(ctx)
+		_ = s.db.Rollback(ctx)
 
 		return -1, err
 	}
@@ -119,10 +120,7 @@ func (s service) DeleteBannerByTagAndFeature(ctx context.Context, featureID, tag
 	id, err := s.db.DeleteBannerByTagAndFeature(ctx, featureID, tagID)
 	if err != nil {
 
-		rollBackErr := s.db.Rollback(ctx)
-		if rollBackErr != nil {
-			return -1, rollBackErr
-		}
+		_ = s.db.Rollback(ctx)
 		return -1, err
 	}
 	return id, nil
