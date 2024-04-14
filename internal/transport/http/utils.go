@@ -5,7 +5,6 @@ import (
 	"avito_intern/internal/transport/http/response"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -52,7 +51,6 @@ func getIDFromURL(r *http.Request) (int, error) {
 	if strID == "" {
 		return -1, errs.NilID
 	}
-	fmt.Println(strID)
 	ID, err := strconv.Atoi(strID)
 	if err != nil {
 		return -1, errs.WrongID
@@ -60,29 +58,6 @@ func getIDFromURL(r *http.Request) (int, error) {
 	return ID, nil
 }
 
-//	func (t transport) permission(w http.ResponseWriter, r *http.Request, groupIDs ...int) error {
-//		jwtToken := r.Header.Get("Authorization")
-//		admin, errs := t.s.IsLogged(r.Context(), jwtToken)
-//		if errs != nil {
-//			return errs
-//		}
-//		if !admin {
-//			return fmt.Errorf(models.NotAdminErr)
-//		}
-//		return nil
-//	}
-//
-//	func (t transport) adminPermission(w http.ResponseWriter, r *http.Request) error {
-//		jwtToken := r.Header.Get("Authorization")
-//		admin, errs := t.s.IsAdmin(r.Context(), jwtToken)
-//		if errs != nil {
-//			return errs
-//		}
-//		if !admin {
-//			return fmt.Errorf(models.NotAdminErr)
-//		}
-//		return nil
-//	}
 func (t transport) permission(_ http.ResponseWriter, r *http.Request, groupIDs ...int) (int, error) {
 	jwtToken := r.Header.Get("Authorization")
 	ok, err := t.s.Permission(r.Context(), jwtToken, groupIDs...)

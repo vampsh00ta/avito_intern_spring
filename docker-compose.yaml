@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   app:
+    container_name: vampshoota_app_avito
     build:
       context: .
     image: app

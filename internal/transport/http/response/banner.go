@@ -10,9 +10,6 @@ type (
 	GetBannerHistory []models.Banner
 )
 
-//	type GetBanners struct {
-//		Banners []models.Banner `json:"banners"`
-//	}
 type CreateBanner struct {
 	ID int `json:"id"  `
 }

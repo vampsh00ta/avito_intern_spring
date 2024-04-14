@@ -18,6 +18,6 @@ postgres:
   name: "docker_avito"
   pool_max: 10
 redis:
-  address: "localhost:6379"
+  address: "redis:6379"
   password: ""
   db: 0

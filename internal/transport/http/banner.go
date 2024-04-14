@@ -35,13 +35,13 @@ func (t transport) GetBannerForUser(w http.ResponseWriter, r *http.Request) {
 	var req request.GetBannerForUser
 
 	if err := decoder.Decode(&req, r.URL.Query()); err != nil {
-		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
 
 		return
 	}
 
 	if err := validate.Struct(req); err != nil {
-		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
 
 		return
 	}
@@ -162,12 +162,12 @@ func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 	var req request.CreateBanner
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
 
 		return
 	}
 	if err := validate.Struct(req); err != nil {
-		t.handleHTTPError(w, errs.Validation, methodName, http.StatusBadRequest)
+		t.handleHTTPError(w, err, methodName, http.StatusBadRequest)
 		return
 	}
 	if ok := json.Valid([]byte(req.Content)); !ok {

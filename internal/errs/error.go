@@ -2,9 +2,9 @@ package errs
 
 import (
 	"errors"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/gorilla/schema"
 	"github.com/redis/go-redis/v9"
 
 	"github.com/jackc/pgx/v5"
@@ -54,6 +54,10 @@ func Handle(err error) error {
 	if _, ok := err.(validator.ValidationErrors); ok { //nolint:errorlint
 		return Validation
 	}
+	if _, ok := err.(schema.EmptyFieldError); ok { //nolint:errorlint
+		return Validation
+	}
+
 	if _, ok := err.(redis.Error); ok { //nolint:errorlint
 		return Unknown
 	}
