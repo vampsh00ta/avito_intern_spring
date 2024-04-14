@@ -195,7 +195,7 @@ func (t transport) CreateBanner(w http.ResponseWriter, r *http.Request) {
 // @Accept      json
 // @Produce     json
 // @Param        id   path      int  true  "Идентификатор баннера"
-// @Param data body request.CreateBanner true "Модель запроса"
+// @Param data body request.ChangeBanner true "Модель запроса"
 // @Success     201 {object} response.CreateBanner "Created"
 // @Failure     400 {object} response.Error Некорректные данные
 // @Failure     401 {object} response.Error Пользователь не авторизован

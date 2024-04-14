@@ -19,6 +19,19 @@ definitions:
       updated_at:
         type: string
     type: object
+  request.ChangeBanner:
+    properties:
+      content:
+        type: string
+      feature_id:
+        type: integer
+      is_active:
+        type: boolean
+      tag_ids:
+        items:
+          type: integer
+        type: array
+    type: object
   request.CreateBanner:
     properties:
       content:
@@ -270,7 +283,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.CreateBanner'
+          $ref: '#/definitions/request.ChangeBanner'
       produces:
       - application/json
       responses:
