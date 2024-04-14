@@ -17,7 +17,7 @@ make test #local
 ```
 make test-docker #docker
 ```
-## Интерфейс API реализован через swagger
+## Интерфейс API реализован через swagger строго по данному в задании конфигу
 ### Swagger url
 ```
 http://localhost:8000/swagger/index.html#/
